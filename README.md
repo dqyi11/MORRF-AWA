@@ -1,2 +1,2 @@
-# MORRF
-MORRF* stands for "Multi-Objective Rapidly-exploring Random Forrest*"
+# MORRF*-AWA
+MORRF*-AWA stands for "Multi-Objective Rapidly-exploring Random Forrest* - Adapative Weight Adjustment"
