@@ -225,6 +225,9 @@ void MORRF::extend() {
         }
 
         if( true == _is_obstacle_free( nearest_node, new_pos )) {
+
+            _sampled_positions.push_back(new_pos);
+
             std::list<KDNode2D> near_nodes = find_near( new_pos );
             KDNode2D new_node( new_pos );
 

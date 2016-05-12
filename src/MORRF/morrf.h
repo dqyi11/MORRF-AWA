@@ -102,6 +102,8 @@ private:
     std::vector<SubproblemTree*> _subproblems;
     std::vector<ReferenceTree*> _references;
 
+    std::vector<POS2D> _sampled_positions;
+
     double _range;
     double _ball_radius;
     double _segment_length;
