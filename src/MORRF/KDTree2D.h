@@ -11,7 +11,7 @@ class RRTNode;
 
 class POS2D {
 public:
-    typedef int value_type;
+    typedef float value_type;
 
     POS2D() {
         d[0] = 0;
