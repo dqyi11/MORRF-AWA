@@ -685,3 +685,7 @@ bool MORRF::is_ref_tree_min_cost() {
     }
     return true;
 }
+
+void MORRF::construct( vector<POS2D>& pos_seq, vector<SubproblemTree*>& new_subproblems ) {
+
+}
