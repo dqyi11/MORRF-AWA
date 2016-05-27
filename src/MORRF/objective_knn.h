@@ -112,7 +112,8 @@ inline std::ostream& operator<< ( std::ostream& out, ObjectiveVector const& T ) 
 
 class ObjectiveKNN {
 public:
-    ObjectiveKNN() {
+    ObjectiveKNN(int K) {
+        m_K = K;
         _p_index = NULL;
     }
 
@@ -156,6 +157,19 @@ public:
         return NULL;
     }
 
+    float get_sparse_diversity( ObjectiveVector& pos ) {
+        float sparse_diversity = 0.0;
+        if( _p_index ) {
+            std::vector<std::vector<int> > indices;
+            std::vector<std::vector<float> > dists;
+            _p_index->knnSearch( pos , indices, dists, K, flann::SearchParams(128));
+            for(std::flan)
+            sparse_diversity +=
+        }
+        return sparse_diversity;
+    }
+
+    int m_K;
     flann::Index<flann::L2<float> >* _p_index;
 };
 

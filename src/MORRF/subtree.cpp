@@ -27,7 +27,7 @@ Path::Path( POS2D start, POS2D goal, int objectiveNum ) {
     m_fitness = 0.0;
 }
 
-RRTree::RRTree( MORRF* parent, unsigned int objective_num, std::vector<double>  weight, unsigned int index ) : m_objective_node(objective_num, this){
+RRTree::RRTree( MORRF* parent, unsigned int objective_num, std::vector<double>  weight, unsigned int index ) : m_objective_node( m_objective_num, this ) {
     mp_parent = parent;
     m_type = UNKNOWN;
     m_objective_num = objective_num;
@@ -245,9 +245,6 @@ bool RRTree::are_all_nodes_fitness_positive() {
 bool RRTree::update_current_best() {
     mp_current_best = find_path();
     if( mp_current_best ) {
-        for(unsigned int i=0;i<m_objective_num;i++) {
-            m_objective_node.set_value(i, mp_current_best->m_cost[i]);
-        }
         return true;
     }
     return false;
@@ -256,7 +253,6 @@ bool RRTree::update_current_best() {
 ReferenceTree::ReferenceTree( MORRF* parent, unsigned int objective_num, std::vector<double> weight, unsigned int index )
     : RRTree( parent, objective_num, weight, index ) {
     m_type = REFERENCE;
-    mp_parent->_p_objective_knn->insert(m_objective_node);
 }
 
 void ReferenceTree::attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes ) {
@@ -370,7 +366,6 @@ Path* ReferenceTree::find_path() {
 SubproblemTree::SubproblemTree( MORRF* parent, unsigned int objective_num, vector<double> weight, unsigned int index )
     : RRTree(parent, objective_num, weight, index ) {
     m_type = SUBPROBLEM;
-    mp_parent->_p_objective_knn->insert(m_objective_node);
 }
 
 void SubproblemTree::attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, list<RRTNode*> near_nodes ) {

@@ -33,7 +33,7 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
         }
     }
 
-    _p_objective_knn = new ObjectiveKNN();
+    _p_objective_knn = new ObjectiveKNN(int(0.3*_subproblem_num));
 }
 
 MORRF::~MORRF() {

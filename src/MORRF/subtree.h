@@ -64,7 +64,6 @@ public:
 
     bool update_current_best();
     Path* mp_current_best;
-    ObjectiveNode m_objective_node;
  
     TREE_TYPE m_type;
     unsigned int m_index;
@@ -78,6 +77,8 @@ public:
 
     std::vector<double> m_weight;
     std::list<RRTNode*> m_nodes;
+
+    ObjectiveNode m_objective_node;
 
 };
 
