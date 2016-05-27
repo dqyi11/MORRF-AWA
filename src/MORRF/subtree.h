@@ -64,8 +64,7 @@ public:
     RRTNode* find_ancestor( RRTNode* p_node );
 
     Path* find_path();
-
-
+ 
     TREE_TYPE m_type;
     unsigned int m_index;
     unsigned int m_objective_num;
@@ -103,6 +102,8 @@ public:
 protected:
     void update_cost_to_children(RRTNode* p_node, std::vector<double>& delta_cost);
 
+    bool update_current_best();
+    Path* mp_current_best;
 };
 
 inline RRTNode* get_ancestor( RRTNode * p_node ) {

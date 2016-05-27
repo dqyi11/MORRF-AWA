@@ -360,6 +360,7 @@ Path* ReferenceTree::find_path() {
 SubproblemTree::SubproblemTree( MORRF* parent, unsigned int objective_num, vector<double> weight, unsigned int index )
     : RRTree(parent, objective_num, weight, index ) {
     m_type = SUBPROBLEM;
+    mp_current_best = NULL;
 }
 
 void SubproblemTree::attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, list<RRTNode*> near_nodes ) {
@@ -491,3 +492,12 @@ RRTNode * SubproblemTree::get_closet_to_goal( vector<double>& delta_cost, double
     }
     return p_closest_node;
 }
+
+bool SubproblemTree::update_current_best() {
+    mp_current_best = find_path();
+    if( mp_current_best ) {
+        return true;
+    }
+    return false; 
+}
+
