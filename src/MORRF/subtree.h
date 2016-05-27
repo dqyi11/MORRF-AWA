@@ -78,6 +78,7 @@ public:
 
     std::vector<double> m_weight;
     std::list<RRTNode*> m_nodes;
+
 };
 
 class ReferenceTree : public RRTree {
@@ -100,6 +101,7 @@ public:
     virtual void attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes );
     virtual void rewire_near_nodes( RRTNode* p_node_new, std::list<RRTNode*> near_nodes );
     virtual RRTNode * get_closet_to_goal( std::vector<double>& delta_cost, double& delta_fitness );
+
 protected:
     void update_cost_to_children(RRTNode* p_node, std::vector<double>& delta_cost);
 

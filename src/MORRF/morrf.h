@@ -77,6 +77,8 @@ public:
     double get_ball_radius() { return _ball_radius; }
     bool update_path_cost( Path *p );
 
+    void construct( std::vector<POS2D>& pos_seq,  std::vector<SubproblemTree*>& new_subproblems );
+
     void optimize();
 protected:
     void _init_weights();
@@ -101,6 +103,8 @@ private:
 
     std::vector<SubproblemTree*> _subproblems;
     std::vector<ReferenceTree*> _references;
+
+    std::vector<SubproblemTree*> _external_archive;
 
     std::vector<POS2D> _sampled_positions;
 
