@@ -32,6 +32,8 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
             _pp_map_info[i][j] = 255;
         }
     }
+
+    _p_objective_knn = new ObjectiveKNN();
 }
 
 MORRF::~MORRF() {

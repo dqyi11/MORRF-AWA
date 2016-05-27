@@ -16,6 +16,8 @@ public:
 };
 
 class MORRF {
+    friend class SubproblemTree;
+    friend class ReferenceTree;
 public:
     enum MORRF_TYPE{ WEIGHTED_SUM, TCHEBYCHEFF, BOUNDARY_INTERSACTION };
     MORRF( unsigned int width, unsigned int height, unsigned int objective_num, unsigned int subproblem_num, unsigned int segment_length, MORRF_TYPE type=WEIGHTED_SUM );
@@ -84,6 +86,8 @@ protected:
     void _init_weights();
     void _deinit_weights();
 
+    ObjectiveKNN* _p_objective_knn;
+
 private:
     int ** _pp_map_info;
 
@@ -113,7 +117,7 @@ private:
     double _segment_length;
     int _obs_check_resolution;
 
-    std::list<MORRFNode*> _morrf_nodes;
+    std::list<MORRFNode*> _morrf_nodes;   
 
     double _theta;
     int _current_iteration;

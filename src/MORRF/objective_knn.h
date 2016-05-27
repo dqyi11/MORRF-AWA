@@ -54,6 +54,12 @@ public:
         return _value[N];
     }
 
+    void set_value(int i, float val) {
+        if(i<0 && i>=_dimension) {
+            _value[i] = val;
+        }
+    }
+
     bool operator==(const ObjectiveVector &other) const {
         for (unsigned int i = 0; i < _dimension; i++) {
             if(_value[i]!=other._value[i]) {

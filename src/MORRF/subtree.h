@@ -64,7 +64,7 @@ public:
 
     bool update_current_best();
     Path* mp_current_best;
-    ObjectiveNode* mp_objective_node;
+    ObjectiveNode m_objective_node;
  
     TREE_TYPE m_type;
     unsigned int m_index;
