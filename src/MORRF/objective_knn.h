@@ -1,21 +1,34 @@
 #ifndef OBJECTIVE_KNN_H_
 #define OBJECTIVE_KNN_H_
 
+#include <list>
+#include <limits>
 #include <flann/flann.hpp>
+#include "subtree.h"
+
+class RRTree;
 
 class ObjectiveVector : public flann::Matrix<float>{
 public:
+    ObjectiveVector( int dimension) {
+        _dimension = dimension;
+        _value = new float[_dimension];
+        for(unsigned int i=0; i<_dimension;i++) {
+            _value[i] = std::numeric_limits<float>::max();
+        }
+        flann::Matrix<float>(_value, 1, _dimension);
+    }
 
-    ObjectiveVector( double*  p_val, int dimension) {
+    ObjectiveVector( float*  p_val, int dimension) {
         _dimension = dimension;
         _value = new float[_dimension];
         for(unsigned int i=0; i<_dimension;i++) {
             _value[i] = p_val[i];
         }
-        flann::Matrix<int>(d, 1, _dimension);
+        flann::Matrix<float>(_value, 1, _dimension);
     }
 
-    ObjectiveVector( const ObjectiveNode & x ) {
+    ObjectiveVector( const ObjectiveVector & x ) {
         for(unsigned int i=0; i<_dimension;i++) {
             _value[i] = x._value[i];
         }
@@ -37,7 +50,7 @@ public:
         return std::sqrt(dist);
     }
 
-    float operator[]( size_t const N ) {
+    float operator[]( size_t const N ) const {
         return _value[N];
     }
 
@@ -50,7 +63,7 @@ public:
         return true;
     }
 
-    int get_dimension() {
+    int get_dimension() const {
         return _dimension;
     }
 
@@ -61,10 +74,19 @@ protected:
 
 class ObjectiveNode : public ObjectiveVector {
 public:
-    KDNode2D( value_type x, value_type y ) : POS2D( x, y ) { m_node_list.clear(); }
-    KDNode2D( POS2D & pos ) : POS2D( pos ) { m_node_list.clear(); }
+    ObjectiveNode( int dimension, RRTree* p_tree ) : ObjectiveVector( dimension ) {
+        mp_tree = p_tree;
+    }
 
-    std::vector<RRTNode*> m_node_list;
+    ObjectiveNode( float*  p_val, int dimension, RRTree* p_tree ) : ObjectiveVector( p_val, dimension ) {
+        mp_tree = p_tree;
+    }
+
+    ~ObjectiveNode() {
+        mp_tree = NULL;
+    }
+
+    RRTree* mp_tree;
 };
 
 

@@ -29,16 +29,18 @@ Path::Path( POS2D start, POS2D goal, int objectiveNum ) {
 
 RRTree::RRTree( MORRF* parent, unsigned int objective_num, std::vector<double>  weight, unsigned int index ) {
     mp_parent = parent;
-    m_type = REFERENCE;
+    m_type = UNKNOWN;
     m_objective_num = objective_num;
     m_index = index;
+    mp_current_best = NULL;
+    mp_objective_node = NULL;
 
     m_weight.clear();
     for( unsigned int k=0; k<m_objective_num; k++ ) {
         m_weight.push_back( weight[k] );
     }
-
     mp_root = NULL;
+
     m_nodes.clear();
 }
 
@@ -241,12 +243,22 @@ bool RRTree::are_all_nodes_fitness_positive() {
     return true;
 }
 
+bool RRTree::update_current_best() {
+    mp_current_best = find_path();
+    if( mp_current_best ) {
+        for(unsigned int i=0;i<m_objective_num;i++) {
+            mp_objective_node[i] = mp_current_best->m_cost[i];
+        }
+        return true;
+    }
+    return false;
+}
 
 ReferenceTree::ReferenceTree( MORRF* parent, unsigned int objective_num, std::vector<double> weight, unsigned int index )
     : RRTree( parent, objective_num, weight, index ) {
     m_type = REFERENCE;
+    mp_objective_node = new ObjectiveNode( objective_num, this );
 }
-
 
 void ReferenceTree::attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes ) {
     double min_new_node_fitness = p_nearest_node->m_fitness + mp_parent->calc_kth_cost( p_nearest_node->m_pos, p_node_new->m_pos, m_index );
@@ -356,11 +368,9 @@ Path* ReferenceTree::find_path() {
     return p_new_path;
 }
 
-
 SubproblemTree::SubproblemTree( MORRF* parent, unsigned int objective_num, vector<double> weight, unsigned int index )
     : RRTree(parent, objective_num, weight, index ) {
     m_type = SUBPROBLEM;
-    mp_current_best = NULL;
 }
 
 void SubproblemTree::attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, list<RRTNode*> near_nodes ) {
@@ -493,11 +503,4 @@ RRTNode * SubproblemTree::get_closet_to_goal( vector<double>& delta_cost, double
     return p_closest_node;
 }
 
-bool SubproblemTree::update_current_best() {
-    mp_current_best = find_path();
-    if( mp_current_best ) {
-        return true;
-    }
-    return false; 
-}
 

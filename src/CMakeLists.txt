@@ -21,7 +21,6 @@ find_package(PkgConfig)
 pkg_check_modules(PC_FLANN flann)
 if( PC_FLANN_FOUND )
   message( "FLANN found\n" )
-  #add_definitions( -DUSE_FLANN )
 endif()
 
 set(FLANN_DEFINITIONS ${PC_FLANN_CFLAGS_OTHER})

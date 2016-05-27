@@ -1,11 +1,8 @@
 #ifndef SUBTREE_H
 #define SUBTREE_H
 
-#ifndef USE_FLANN
-  #include "KDTree2D.h"
-#else
-  #include "KDTree2D_flann.h"
-#endif
+#include "KDTree2D.h"
+#include "objective_knn.h"
 #include <vector>
 #include <list>
 
@@ -43,7 +40,7 @@ public:
 
 class RRTree {
 public:
-    enum TREE_TYPE{ SUBPROBLEM, REFERENCE };
+    enum TREE_TYPE{ UNKNOWN, SUBPROBLEM, REFERENCE };
     RRTree( MORRF* parent, unsigned int objective_num, std::vector<double> weight, unsigned int index);
 
     RRTNode* init( POS2D start, POS2D goal );
@@ -64,6 +61,10 @@ public:
     RRTNode* find_ancestor( RRTNode* p_node );
 
     Path* find_path();
+
+    bool update_current_best();
+    Path* mp_current_best;
+    ObjectiveNode* mp_objective_node;
  
     TREE_TYPE m_type;
     unsigned int m_index;
@@ -103,9 +104,6 @@ public:
 
 protected:
     void update_cost_to_children(RRTNode* p_node, std::vector<double>& delta_cost);
-
-    bool update_current_best();
-    Path* mp_current_best;
 };
 
 inline RRTNode* get_ancestor( RRTNode * p_node ) {
