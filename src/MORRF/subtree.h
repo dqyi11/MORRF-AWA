@@ -78,7 +78,7 @@ public:
     std::vector<double> m_weight;
     std::list<RRTNode*> m_nodes;
 
-    ObjectiveNode m_objective_node;
+    ObjectiveVector m_objective_vector;
 
 };
 

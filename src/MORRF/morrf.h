@@ -86,6 +86,8 @@ protected:
     void _init_weights();
     void _deinit_weights();
 
+    void update_sparsity_level();
+
     ObjectiveKNN* _p_objective_knn;
 
 private:

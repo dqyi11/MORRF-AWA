@@ -292,6 +292,10 @@ void MORRF::extend() {
                 _subproblems[m]->rewire_near_nodes( new_node.m_node_list[index], near_sub_nodes );
             }
         }
+
+        // update current best and calculate sparsity level
+        update_sparsity_level();
+
     }
 
     if(_current_iteration % 10 == 0) {
@@ -299,6 +303,15 @@ void MORRF::extend() {
     }
 
     _current_iteration++;
+}
+
+void MORRF::update_sparsity_level() {
+    for ( unsigned int k=0; k<_objective_num; k++ ) {
+        _references[k]->update_current_best();
+    }
+    for( unsigned int m=0; m<_subproblem_num; m++ ) {
+        _subproblems[m]->update_current_best();
+    }
 }
 
 KDNode2D MORRF::find_nearest( POS2D pos ) {
