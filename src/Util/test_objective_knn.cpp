@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     obj_knn.insert(vec8);
     float p9[2] = {2.0, 0.0};
     ObjectiveVector vec9(p9, 2);
-    obj_knn.insert(vec9);
+    obj_knn.insert(vec9); 
 
     std::cout << "nodes loaded" << std::endl;
     obj_knn._p_index->buildIndex();
