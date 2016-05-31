@@ -22,6 +22,7 @@ public:
     }
 
     std::vector<float> get_sparse_diversity( flann::Matrix<float>& vecs ) {
+
         std::vector<float> sparse_diversity( vecs.cols, 0.0 );
         if( _p_index ) {
             std::vector<std::vector<int> > indices;
