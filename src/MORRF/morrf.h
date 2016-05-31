@@ -88,8 +88,6 @@ protected:
 
     void update_sparsity_level();
 
-    ObjectiveKNN* _p_objective_knn;
-
 private:
     int ** _pp_map_info;
 

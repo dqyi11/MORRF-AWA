@@ -78,8 +78,6 @@ public:
     std::vector<double> m_weight;
     std::list<RRTNode*> m_nodes;
 
-    ObjectiveVector m_objective_vector;
-
 };
 
 class ReferenceTree : public RRTree {

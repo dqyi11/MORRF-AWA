@@ -3,6 +3,7 @@
 #include <fstream>
 #include <limits>
 #include "morrf.h"
+#include "objective_knn.h"
 
 #define OBSTACLE_THRESHOLD 200
 
@@ -32,8 +33,6 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
             _pp_map_info[i][j] = 255;
         }
     }
-
-    _p_objective_knn = new ObjectiveKNN(int(0.3*_subproblem_num));
 }
 
 MORRF::~MORRF() {
@@ -312,7 +311,11 @@ void MORRF::update_sparsity_level() {
     for( unsigned int m=0; m<_subproblem_num; m++ ) {
         _subproblems[m]->update_current_best();
     }
+
+
 }
+
+
 
 KDNode2D MORRF::find_nearest( POS2D pos ) {
     KDNode2D node( pos );

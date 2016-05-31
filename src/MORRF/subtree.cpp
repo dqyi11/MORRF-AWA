@@ -27,7 +27,7 @@ Path::Path( POS2D start, POS2D goal, int objectiveNum ) {
     m_fitness = 0.0;
 }
 
-RRTree::RRTree( MORRF* parent, unsigned int objective_num, std::vector<double>  weight, unsigned int index ) : m_objective_vector( m_objective_num, this ) {
+RRTree::RRTree( MORRF* parent, unsigned int objective_num, std::vector<double>  weight, unsigned int index ) {
     mp_parent = parent;
     m_type = UNKNOWN;
     m_objective_num = objective_num;

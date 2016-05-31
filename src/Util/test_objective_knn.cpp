@@ -4,43 +4,28 @@
 
 int main(int argc, char *argv[]) {
 
-    ObjectiveKNN obj_knn(1);
-    float p0[2] = {5.0, 4.0};
-    ObjectiveVector vec0(p0, 2);
-    obj_knn.insert(vec0);
-    float p1[2] = {4.0, 2.0};
-    ObjectiveVector vec1(p1, 2);
-    obj_knn.insert(vec1);
-    float p2[2] = {7.0, 6.0};
-    ObjectiveVector vec2(p2, 2);
-    obj_knn.insert(vec2);
-    float p3[2] = {2.0, 2.0};
-    ObjectiveVector vec3(p3, 2);
-    obj_knn.insert(vec3);
-    float p4[2] = {8.0, 0.0};
-    ObjectiveVector vec4(p4, 2);
-    obj_knn.insert(vec4);
-    float p5[2] = {5.0, 7.0};
-    ObjectiveVector vec5(p5, 2);
-    obj_knn.insert(vec5);
-    float p6[2] = {3.0, 3.0};
-    ObjectiveVector vec6(p6, 2);
-    obj_knn.insert(vec6);
-    float p7[2] = {9.0, 7.0};
-    ObjectiveVector vec7(p7, 2);
-    obj_knn.insert(vec7);
-    float p8[2] = {2.0, 2.0};
-    ObjectiveVector vec8(p8, 2);
-    obj_knn.insert(vec8);
-    float p9[2] = {2.0, 0.0};
-    ObjectiveVector vec9(p9, 2);
-    obj_knn.insert(vec9); 
+    float data[2*10];
+    data[0] = 5.0; data[1] = 4.0;
+    data[2] = 4.0; data[3] = 2.0;
+    data[4] = 7.0; data[5] = 6.0;
+    data[6] = 2.0; data[7] = 2.0;
+    data[8] = 8.0; data[9] = 0.0;
+    data[10] = 5.0; data[11] = 7.0;
+    data[12] = 3.0; data[13] = 3.0;
+    data[14] = 9.0; data[15] = 7.0;
+    data[16] = 2.0; data[17] = 2.0;
+    data[18] = 2.0; data[19] = 0.0;
+    flann::Matrix <float> vec(data, 10, 2);
+    ObjectiveKNN knn(5, vec);
 
-    std::cout << "nodes loaded" << std::endl;
-    obj_knn._p_index->buildIndex();
+
     float t0[2] = {3.0, 5.0};
-    ObjectiveVector vec_t0(t0, 2);
-    obj_knn.find_nearest(vec_t0);
+    flann::Matrix<float> vec_t0(t0, 1, 2);
+    std::vector<float> res = knn.get_sparse_diversity(vec_t0);
+
+    for(unsigned int i=0; i < res.size(); i++ ) {
+        std::cout << res[i] << std::endl;
+    }
 
     return 0;
 }
