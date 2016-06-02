@@ -36,7 +36,6 @@ public:
                     sparse_diversity[i] += dists[i][j];
                 }
             }
-
         }
         return sparse_diversity;
     }
