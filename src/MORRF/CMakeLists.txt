@@ -1,20 +1,31 @@
 
-set(LIB morrf)
+set(LIB morrf-awa)
+
+set(${HDR} morrf_awa/kdtree++/allocator.hpp
+           morrf_awa/kdtree++/function.hpp
+           morrf_awa/kdtree++/iterator.hpp
+           morrf_awa/kdtree++/kdtree.hpp
+           morrf_awa/kdtree++/node.hpp
+           morrf_awa/kdtree++/region.hpp
+           morrf_awa/KDTree2D.h
+           morrf_awa/utilities.h
+           morrf_awa/subtree.h
+           morrf_awa/morrf.h
+           morrf_awa/objective_knn.h
+    )
 
 add_library(${LIB} SHARED
-            kdtree++/allocator.hpp
-            kdtree++/function.hpp
-            kdtree++/iterator.hpp
-            kdtree++/kdtree.hpp
-            kdtree++/node.hpp
-            kdtree++/region.hpp
-            KDTree2D.h
-            objective_knn.h
-            utilities.h
-            subtree.h
+            ${HDR}
             subtree.cpp
-            morrf.h
             morrf.cpp
            )
 
 target_link_libraries(${LIB})
+
+install(TARGETS ${LIB}
+        LIBRARY
+        DESTINATION lib
+        ARCHIVE
+        DESTINATION lib)
+
+install(DIRECTORY morrf DESTINATION include)

@@ -2,8 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
-#include "morrf.h"
-#include "objective_knn.h"
+#include "morrf_awa/morrf.h"
+#include "morrf_awa/objective_knn.h"
 
 #define OBSTACLE_THRESHOLD 200
 

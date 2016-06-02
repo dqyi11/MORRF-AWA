@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include "objective_knn.h"
+#include "morrf_awa/objective_knn.h"
 
 int main(int argc, char *argv[]) {
 
