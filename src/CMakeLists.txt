@@ -19,9 +19,9 @@ endif()
 # Find package FLANN
 find_package(PkgConfig)
 pkg_check_modules(PC_FLANN flann)
-if( PC_FLANN_FOUND )
-  message( "FLANN found\n" )
-endif()
+#if( PC_FLANN_FOUND )
+#  message( "FLANN found\n" )
+#endif()
 
 set(FLANN_DEFINITIONS ${PC_FLANN_CFLAGS_OTHER})
 

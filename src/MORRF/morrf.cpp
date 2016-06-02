@@ -25,6 +25,7 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
     _segment_length = segmentLength;
 
     _theta = 4;
+    _sparsity_k = _subproblem_num * 0.4;
 
     _pp_map_info = new int*[_sampling_width];
     for( unsigned int i=0; i<_sampling_width; i++ ) {
@@ -305,17 +306,28 @@ void MORRF::extend() {
 }
 
 void MORRF::update_sparsity_level() {
-    for ( unsigned int k=0; k<_objective_num; k++ ) {
+
+    float objs[ (_objective_num+_subproblem_num) * _objective_num ];
+    for( unsigned int k=0; k<_objective_num; k++ ) {
         _references[k]->update_current_best();
+        for( unsigned int i=0; i<_objective_num; i++) {
+            objs[k*_objective_num+i] =  _references[k]->m_current_best_cost[i];
+        }
     }
     for( unsigned int m=0; m<_subproblem_num; m++ ) {
         _subproblems[m]->update_current_best();
     }
 
-
+    flann::Matrix<float> obj_vec(objs, _objective_num+_subproblem_num, _objective_num);
+    ObjectiveKNN knn( _sparsity_k, obj_vec );
+    std::vector<float> res = knn.get_sparse_diversity(obj_vec);
+    for( unsigned int k=0; k<_objective_num; k++ ) {
+        _references[k]->m_sparsity_level = res[k];
+    }
+    for( unsigned int m=0; m<_subproblem_num; m++ ) {
+        _subproblems[m]->m_sparsity_level = res[m+_objective_num];
+    }
 }
-
-
 
 KDNode2D MORRF::find_nearest( POS2D pos ) {
     KDNode2D node( pos );

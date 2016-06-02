@@ -41,6 +41,8 @@ RRTree::RRTree( MORRF* parent, unsigned int objective_num, std::vector<double>  
     mp_root = NULL;
 
     m_nodes.clear();
+    m_current_best_cost = std::vector<double>(m_objective_num, std::numeric_limits<float>::max());
+    m_sparsity_level = 0.0;
 }
 
 RRTNode* RRTree::init( POS2D start, POS2D goal ) {
@@ -245,6 +247,9 @@ bool RRTree::are_all_nodes_fitness_positive() {
 bool RRTree::update_current_best() {
     mp_current_best = find_path();
     if( mp_current_best ) {
+        for(unsigned int k=0;k<m_objective_num;k++) {
+            m_current_best_cost[k] = mp_current_best->m_cost[k];
+        }
         return true;
     }
     return false;

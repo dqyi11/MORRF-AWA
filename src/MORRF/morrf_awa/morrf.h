@@ -121,6 +121,8 @@ private:
 
     double _theta;
     int _current_iteration;
+
+    unsigned int _sparsity_k;
 };
 
 #endif // MORRF_H
