@@ -33,6 +33,7 @@ public:
     void extend();
 
     KDNode2D find_nearest( POS2D pos );
+    KDNode2D find_exact(POS2D pos);
     std::list<KDNode2D> find_near( POS2D pos );
 
     bool _is_obstacle_free( POS2D pos_a, POS2D pos_b );

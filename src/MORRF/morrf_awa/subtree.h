@@ -79,7 +79,6 @@ public:
     std::list<RRTNode*> m_nodes;
     std::vector<double> m_current_best_cost;
     double m_sparsity_level;
-
 };
 
 class ReferenceTree : public RRTree {

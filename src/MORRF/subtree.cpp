@@ -334,7 +334,7 @@ RRTNode * ReferenceTree::get_closet_to_goal( vector<double>& delta_cost, double&
             it!=near_nodes.end(); it++ ) {
 
             KDNode2D kd_node = (*it);
-            RRTNode* p_node = kd_node.m_node_list[m_index];           
+            RRTNode* p_node = kd_node.mp_morrf_node->m_nodes[m_index];
             if( mp_parent->_is_obstacle_free( p_node->m_pos, m_goal ) ) {
 
                 double delta_fitness = mp_parent->calc_kth_cost( p_node->m_pos, m_goal, m_index );
@@ -477,7 +477,7 @@ RRTNode * SubproblemTree::get_closet_to_goal( vector<double>& delta_cost, double
             it != near_nodes.end(); it++ ) {
             KDNode2D kd_node = (*it);
             int index = m_index + m_objective_num;
-            RRTNode* p_node = kd_node.m_node_list[index];
+            RRTNode* p_node = kd_node.mp_morrf_node->m_nodes[index];
 
             if( mp_parent->_is_obstacle_free( p_node->m_pos, m_goal ) ) {
                 vector<double> new_delta_cost(m_objective_num, 0.0);
