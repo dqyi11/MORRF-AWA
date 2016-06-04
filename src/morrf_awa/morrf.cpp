@@ -291,10 +291,17 @@ void MORRF::extend() {
 
                 _subproblems[m]->attach_new_node( p_new_sub_node, p_nearest_sub_node, near_sub_nodes );
                 _subproblems[m]->rewire_near_nodes( new_node.mp_morrf_node->m_nodes[index], near_sub_nodes );
+
             }
         }
 
         // update current best and calculate sparsity level
+        for ( unsigned int k=0; k<_objective_num; k++ ) {
+            _references[k]->update_current_best();
+        }
+        for( unsigned int m=0; m<_subproblem_num; m++ ) {
+            _subproblems[m]->update_current_best();
+        }
         update_sparsity_level();
 
     }
