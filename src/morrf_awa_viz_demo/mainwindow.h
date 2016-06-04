@@ -7,7 +7,7 @@
 #include <QAction>
 #include <QPixmap>
 #include <QProgressBar>
-#include "morrfvisualizer.h"
+#include "morrf_awa_viz/morrfvisualizer.h"
 
 class ConfigObjDialog;
 class MORRF;

@@ -12,7 +12,7 @@ class MORRFNode;
 
 class POS2D {
 public:
-    typedef float value_type;
+    typedef double value_type;
 
     POS2D() {
         d[0] = 0;

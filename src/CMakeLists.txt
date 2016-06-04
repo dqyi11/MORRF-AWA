@@ -34,17 +34,17 @@ include_directories(${FLANN_INCLUDE_DIR})
 
 
 # add the include directories to the build
-include_directories(${PROJECT_SOURCE_DIR}/src/MORRF
-                    ${PROJECT_SOURCE_DIR}/src/Util
-                    ${PROJECT_SOURCE_DIR}/src/MORRFViz
-                    ${PROJECT_SOURCE_DIR}/src/MORRFVizDemo
+include_directories(${PROJECT_SOURCE_DIR}/src/morrf_awa
+                    ${PROJECT_SOURCE_DIR}/src/util
+                    ${PROJECT_SOURCE_DIR}/src/morrf_awa_viz
+                    ${PROJECT_SOURCE_DIR}/src/morrf_awa_viz_demo
                    )
 
 add_definitions(-Wall -g -O3)
 
-add_subdirectory(MORRF)
-add_subdirectory(Util)
-add_subdirectory(MORRFViz)
-add_subdirectory(MORRFVizDemo)
+add_subdirectory(morrf_awa)
+add_subdirectory(util)
+add_subdirectory(morrf_awa_viz)
+add_subdirectory(morrf_awa_viz_demo)
 
 

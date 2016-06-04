@@ -1,4 +1,4 @@
-#include "morrfvisualizer.h"
+#include "morrf_awa_viz/morrfvisualizer.h"
 #include <QtGui>
 
 MORRFVisualizer::MORRFVisualizer(QWidget *parent) :

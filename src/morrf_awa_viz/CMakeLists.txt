@@ -1,13 +1,13 @@
 
-set(LIB morrf-viz)
+set(LIB morrf-awa-viz)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_library(${LIB} SHARED
-            multiobjpathplanninginfo.h
+            morrf_awa_viz/multiobjpathplanninginfo.h
+            morrf_awa_viz/morrfvisualizer.h
             multiobjpathplanninginfo.cpp
-            morrfvisualizer.h
             morrfvisualizer.cpp
            )
 
@@ -16,6 +16,6 @@ include_directories(
                    )
 
 target_link_libraries(${LIB} 
-                      morrf
+                      morrf-awa
                       ${Qt5Widgets_LIBRARIES}
                      )

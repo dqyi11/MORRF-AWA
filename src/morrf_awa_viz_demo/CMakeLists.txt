@@ -1,7 +1,7 @@
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(morrf-viz-demo
+add_executable(morrf-awa-viz-demo
                configobjdialog.h
                configobjdialog.cpp
                mainwindow.h
@@ -14,9 +14,9 @@ include_directories(
                    ${Qt5Core_INCLUDE_DIRS}
                    )
 
-target_link_libraries(morrf-viz-demo
-                      morrf
-                      morrf-viz
+target_link_libraries(morrf-awa-viz-demo
+                      morrf-awa
+                      morrf-awa-viz
                       ${Qt5Widgets_LIBRARIES}
                       ${Qt5Core_LIBRARIES}
                      )

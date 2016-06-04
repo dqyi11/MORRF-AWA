@@ -52,7 +52,6 @@ void MORRF::add_funcs( std::vector<COST_FUNC_PTR> funcs, std::vector<int**> fitn
 
 void MORRF::_init_weights() {
     _deinit_weights();
-
     _weights.clear();
 
     for( unsigned int i=0; i<_subproblem_num; i++ ) {
@@ -218,7 +217,6 @@ void MORRF::extend() {
 
         POS2D new_pos = steer( rnd_pos, nearest_node );
 
-        std::cout << "POS " << new_pos[0] << " " << new_pos[1] << std::endl;
         if(true == _contains( new_pos )) {
             continue;
         }
@@ -702,10 +700,8 @@ bool MORRF::is_ref_tree_min_cost() {
     return true;
 }
 
-
-
-
 void MORRF::construct( vector<POS2D>& pos_seq, vector<SubproblemTree*>& new_subproblems ) {
+
     for(unsigned int i=0; i<pos_seq.size();i++) {
         POS2D current_pos = pos_seq[i];
         KDNode2D nearest_node = find_nearest( current_pos );
