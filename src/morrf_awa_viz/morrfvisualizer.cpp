@@ -77,6 +77,8 @@ void MORRFVisualizer::paintEvent(QPaintEvent * e) {
                                          QPoint(pTree->mp_current_best->m_waypoints[i+1][0], pTree->mp_current_best->m_waypoints[i+1][1]));
                     }
                 }
+
+                painter.drawText(QRect(10,10,60,30), Qt::AlignLeft, QString::number(pTree->m_sparsity_level));
             }
         }
 

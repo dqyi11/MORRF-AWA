@@ -296,12 +296,6 @@ void MORRF::extend() {
         }
 
         // update current best and calculate sparsity level
-        for ( unsigned int k=0; k<_objective_num; k++ ) {
-            _references[k]->update_current_best();
-        }
-        for( unsigned int m=0; m<_subproblem_num; m++ ) {
-            _subproblems[m]->update_current_best();
-        }
         update_sparsity_level();
 
     }
@@ -329,6 +323,11 @@ void MORRF::update_sparsity_level() {
     flann::Matrix<float> obj_vec(objs, _objective_num+_subproblem_num, _objective_num);
     ObjectiveKNN knn( _sparsity_k, obj_vec );
     std::vector<float> res = knn.get_sparse_diversity(obj_vec);
+    std::cout << "SIZE " << res.size() << " [";
+    for(unsigned int i=0; i<res.size();i++) {
+        std::cout << res[i] << " ";
+    }
+    std::cout << std::endl;
     for( unsigned int k=0; k<_objective_num; k++ ) {
         _references[k]->m_sparsity_level = res[k];
     }
