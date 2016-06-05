@@ -78,7 +78,7 @@ void MORRFVisualizer::paintEvent(QPaintEvent * e) {
                     }
                 }
 
-                painter.drawText(QRect(10,10,60,30), Qt::AlignLeft, QString::number(pTree->m_sparsity_level));
+                painter.drawText(QRect(10,10,100,30), Qt::AlignLeft, QString::number(pTree->m_sparsity_level));
             }
         }
 

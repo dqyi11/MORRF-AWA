@@ -310,6 +310,7 @@ void MORRF::extend() {
 void MORRF::update_sparsity_level() {
 
     float objs[ (_objective_num+_subproblem_num) * _objective_num ];
+    memset(objs, 0, (_objective_num+_subproblem_num) * _objective_num);
     for( unsigned int k=0; k<_objective_num; k++ ) {
         _references[k]->update_current_best();
         for( unsigned int i=0; i<_objective_num; i++) {
@@ -318,6 +319,9 @@ void MORRF::update_sparsity_level() {
     }
     for( unsigned int m=0; m<_subproblem_num; m++ ) {
         _subproblems[m]->update_current_best();
+        for( unsigned int i=0; i<_objective_num; i++) {
+            objs[_objective_num*_objective_num+m*_objective_num+i] = _subproblems[m]->m_current_best_cost[i];
+        }
     }
 
     flann::Matrix<float> obj_vec(objs, _objective_num+_subproblem_num, _objective_num);
