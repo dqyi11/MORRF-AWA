@@ -9,8 +9,7 @@
 
 using namespace std;
 
-bool sparisity_compare(SubproblemTree* const & a, SubproblemTree* const & b)
-{
+bool sparisity_compare(SubproblemTree* const & a, SubproblemTree* const & b) {
     return a->m_sparsity_level < b->m_sparsity_level;
 }
 
@@ -303,8 +302,6 @@ void MORRF::extend() {
         // update current best and calculate sparsity level
         update_sparsity_level();
         std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare);
-
-
     }
 
     if(_current_iteration % 10 == 0) {
@@ -333,6 +330,16 @@ void MORRF::update_sparsity_level() {
     flann::Matrix<float> obj_vec(objs, _objective_num+_subproblem_num, _objective_num);
     ObjectiveKNN knn( _sparsity_k, obj_vec );
     std::vector<float> res = knn.get_sparse_diversity(obj_vec);
+    std::cout << "OBJ_VEC: ";
+    for(unsigned int i=0; i<obj_vec.rows; i++) {
+        std::cout<< "( ";
+        for(unsigned int j=0; j<obj_vec.cols; j++) {
+            std::cout << obj_vec[i][j] << " ";
+        }
+        std::cout <<") ";
+    }
+    std::cout << std::endl;
+
     std::cout << "SIZE " << res.size() << " [";
     for(unsigned int i=0; i<res.size();i++) {
         std::cout << res[i] << " ";

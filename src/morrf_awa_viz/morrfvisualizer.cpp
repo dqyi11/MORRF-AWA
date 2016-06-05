@@ -62,8 +62,7 @@ void MORRFVisualizer::paintEvent(QPaintEvent * e) {
                     }
                 }
             }
-
-            painter.drawText(QRect(10, height()-40, 60, 30),Qt::AlignLeft, "Index:"+QString::number(pTree->m_index));
+            painter.drawText(QRect(10, height()-20, 60, 30),Qt::AlignLeft, "Index:"+QString::number(pTree->m_index));
 
             if( pTree->mp_current_best ) {
                 QPen paintpen(QColor(255,140,0));
@@ -79,7 +78,6 @@ void MORRFVisualizer::paintEvent(QPaintEvent * e) {
                                          QPoint(pTree->mp_current_best->m_waypoints[i+1][0], pTree->mp_current_best->m_waypoints[i+1][1]));
                     }
                 }
-
                 painter.drawText(QRect(10,10,100,30), Qt::AlignLeft, QString::number(pTree->m_sparsity_level));
             }
         }
