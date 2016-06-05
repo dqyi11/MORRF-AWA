@@ -9,6 +9,11 @@
 
 using namespace std;
 
+bool sparisity_compare(SubproblemTree* const & a, SubproblemTree* const & b)
+{
+    return a->m_sparsity_level < b->m_sparsity_level;
+}
+
 MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num, unsigned int subproblem_num, unsigned int segmentLength, MORRF_TYPE type) {
     _sampling_width = width;
     _sampling_height = height;
@@ -297,13 +302,14 @@ void MORRF::extend() {
 
         // update current best and calculate sparsity level
         update_sparsity_level();
+        std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare);
+
 
     }
 
     if(_current_iteration % 10 == 0) {
         optimize();
     }
-
     _current_iteration++;
 }
 

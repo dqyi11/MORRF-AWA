@@ -63,6 +63,8 @@ void MORRFVisualizer::paintEvent(QPaintEvent * e) {
                 }
             }
 
+            painter.drawText(QRect(10, height()-40, 60, 30),Qt::AlignLeft, "Index:"+QString::number(pTree->m_index));
+
             if( pTree->mp_current_best ) {
                 QPen paintpen(QColor(255,140,0));
                 paintpen.setStyle(Qt::DashLine);
