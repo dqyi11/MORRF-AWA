@@ -65,6 +65,8 @@ public:
     void dump_map_info( std::string filename );
     void dump_weights( std::string filename );
 
+    void dump_subproblem_sparsity( std::string filename );
+
     float calc_fitness_by_weighted_sum( std::vector<double>& cost, std::vector<double>& weight );
     float calc_fitness_by_tchebycheff( std::vector<double>& cost, std::vector<double>& weight, std::vector<double>& utopia_reference );
     float calc_fitness_by_boundary_intersection( std::vector<double>& cost, std::vector<double>& weight, std::vector<double>& utopia_reference );

@@ -206,6 +206,8 @@ void MainWindow::onRun() {
         repaint();
     }
 
+    mpMORRF->dump_subproblem_sparsity("sparsity.txt");
+
     std::vector<Path*> paths = mpMORRF->get_paths();
     mpViz->mMOPPInfo.loadPaths(paths);
     repaint();

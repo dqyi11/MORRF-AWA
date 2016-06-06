@@ -743,3 +743,23 @@ void MORRF::construct( vector<POS2D>& pos_seq, vector<SubproblemTree*>& new_subp
         }
     }
 }
+
+void MORRF::dump_subproblem_sparsity( std::string filename ) {
+    ofstream sparsity_file;
+    sparsity_file.open(filename.c_str());
+
+    for( unsigned int i=0; i<_subproblem_num; i++ ) {
+        for( unsigned int j=0; j<_objective_num; j++ ) {
+            sparsity_file << _subproblems[i]->m_current_best_cost[j] << " ";
+        }
+        sparsity_file << std::endl;
+    }
+
+    sparsity_file << std::endl;
+
+    for( unsigned int i=0; i<_subproblem_num; i++ ) {
+        sparsity_file << _subproblems[i]->m_sparsity_level << std::endl;
+    }
+
+    sparsity_file.close();
+}
