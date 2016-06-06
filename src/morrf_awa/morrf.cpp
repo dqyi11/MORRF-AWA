@@ -82,23 +82,23 @@ void MORRF::init(POS2D start, POS2D goal) {
 
     _init_weights();
 
-    KDNode2D root(start);
-    MORRFNode* p_morrf_node = new MORRFNode( start );
-    root.mp_morrf_node = p_morrf_node;
+    KDNode2D root(start);    
+    root.mp_morrf_node = new MORRFNode( start );
+    root.mp_morrf_node->m_nodes = std::vector<RRTNode*>(_objective_num+_subproblem_num, NULL);
 
     for( unsigned int k=0; k<_objective_num; k++ ) {
         vector<double> weight(_objective_num, 0.0);
         weight[k] = 1.0;
         ReferenceTree * p_ref_tree = new ReferenceTree( this, _objective_num, weight, k );
         RRTNode * p_root_node = p_ref_tree->init( start, goal );
-        root.mp_morrf_node->m_nodes.push_back( p_root_node );
+        root.mp_morrf_node->m_nodes[k] = p_root_node;
         _references.push_back( p_ref_tree );
     }
 
     for( unsigned int m=0; m<_subproblem_num; m++ ) {
-        SubproblemTree * p_sub_tree = new SubproblemTree( this, _objective_num, _weights[m], m );
+        SubproblemTree * p_sub_tree = new SubproblemTree( this, _objective_num, _weights[m], m+_objective_num );
         RRTNode * p_root_node = p_sub_tree->init( start, goal );
-        root.mp_morrf_node->m_nodes.push_back( p_root_node );
+        root.mp_morrf_node->m_nodes[_objective_num+m] = p_root_node;
         _subproblems.push_back( p_sub_tree );
     }
     _p_kd_tree->insert( root );
@@ -235,24 +235,24 @@ void MORRF::extend() {
             std::list<KDNode2D> near_nodes = find_near( new_pos );
             KDNode2D new_node( new_pos );
 
-            MORRFNode* p_morrf_node = new MORRFNode( new_pos );
-            new_node.mp_morrf_node = p_morrf_node;
+            new_node.mp_morrf_node = new MORRFNode( new_pos );
+            new_node.mp_morrf_node->m_nodes = std::vector<RRTNode*>(_objective_num+_subproblem_num, NULL);
 
             // create new nodes of reference trees
             for( unsigned int k=0; k < _objective_num; k++ ) {
                 RRTNode * p_new_ref_node = _references[k]->create_new_node( new_pos );
-                p_new_ref_node->mp_host_node = p_morrf_node;
-                p_morrf_node->m_nodes.push_back( p_new_ref_node );
+                p_new_ref_node->mp_host_node = new_node.mp_morrf_node;
+                new_node.mp_morrf_node->m_nodes[_references[k]->m_index] = p_new_ref_node;
             }
 
             // create new nodes of subproblem trees
             for ( unsigned int m=0; m < _subproblem_num; m++ ) {
                 RRTNode * p_new_sub_node = _subproblems[m]->create_new_node( new_pos );
-                p_new_sub_node->mp_host_node = p_morrf_node;
-                p_morrf_node->m_nodes.push_back( p_new_sub_node );
+                p_new_sub_node->mp_host_node = new_node.mp_morrf_node;
+                new_node.mp_morrf_node->m_nodes[_subproblems[m]->m_index] = p_new_sub_node;
             }
 
-            _morrf_nodes.push_back( p_morrf_node );
+            _morrf_nodes.push_back( new_node.mp_morrf_node );
 
             _p_kd_tree->insert( new_node );
             node_inserted = true;
@@ -260,8 +260,8 @@ void MORRF::extend() {
             // attach new node to reference trees
             // rewire near nodes of reference trees
             for ( unsigned int k=0; k<_objective_num; k++ ) {
-                // std::cout << "@ " << k << std::endl;
-                unsigned int index = k;
+
+                unsigned int index = _references[k]->m_index;
                 RRTNode* p_nearest_ref_node = nearest_node.mp_morrf_node->m_nodes[index];
                 RRTNode* p_new_ref_node = new_node.mp_morrf_node->m_nodes[index];
                 list<RRTNode*> near_ref_nodes;
@@ -280,8 +280,8 @@ void MORRF::extend() {
             // attach new nodes to subproblem trees
             // rewire near nodes of subproblem trees
             for( unsigned int m=0; m<_subproblem_num; m++ ) {
-                // std::cout << "@ " << m+mObjectiveNum << std::endl;
-                unsigned int index = m + _objective_num;
+
+                unsigned int index = _subproblems[m]->m_index;
                 RRTNode* p_nearest_sub_node = nearest_node.mp_morrf_node->m_nodes[index];
                 RRTNode* p_new_sub_node = new_node.mp_morrf_node->m_nodes[index];
                 std::list<RRTNode*> near_sub_nodes;
@@ -295,11 +295,8 @@ void MORRF::extend() {
 
                 _subproblems[m]->attach_new_node( p_new_sub_node, p_nearest_sub_node, near_sub_nodes );
                 _subproblems[m]->rewire_near_nodes( new_node.mp_morrf_node->m_nodes[index], near_sub_nodes );
-
             }
         }
-
-        std::cout << "update sparsity level" << std::endl;
 
         // update current best and calculate sparsity level
         update_sparsity_level();
@@ -316,43 +313,24 @@ void MORRF::update_sparsity_level() {
 
     float objs[ (_objective_num+_subproblem_num) * _objective_num ];
     //memset(objs, 0, (_objective_num+_subproblem_num) * _objective_num);
-    std::cout << "update current best of reference trees " << _references.size() << std::endl;
     for( unsigned int k=0; k<_objective_num; k++ ) {
         _references[k]->update_current_best();
         for( unsigned int i=0; i<_objective_num; i++) {
             objs[k*_objective_num+i] =  _references[k]->m_current_best_cost[i];
         }
     }
-    std::cout << "update current best of subproblem trees " << _subproblems.size() << std::endl;
+
     for( unsigned int m=0; m<_subproblem_num; m++ ) {
         _subproblems[m]->update_current_best();
-        std::cout << m << " (";
         for( unsigned int i=0; i<_objective_num; i++) {
-            std::cout << i << " ";
             objs[_objective_num*_objective_num+m*_objective_num+i] = _subproblems[m]->m_current_best_cost[i];
         }
-        std::cout << ") ";
     }
-    std::cout << std::endl;
-    std::cout << "get_sparse_diversity" << std::endl;
+
     flann::Matrix<float> obj_vec(objs, _objective_num+_subproblem_num, _objective_num);
     ObjectiveKNN knn( _sparsity_k, obj_vec );
     std::vector<float> res = knn.get_sparse_diversity(obj_vec);
-    std::cout << "OBJ_VEC: ";
-    for(unsigned int i=0; i<obj_vec.rows; i++) {
-        std::cout<< "( ";
-        for(unsigned int j=0; j<obj_vec.cols; j++) {
-            std::cout << obj_vec[i][j] << " ";
-        }
-        std::cout <<") ";
-    }
-    std::cout << std::endl;
 
-    std::cout << "SIZE " << res.size() << " [";
-    for(unsigned int i=0; i<res.size();i++) {
-        std::cout << res[i] << " ";
-    }
-    std::cout << std::endl;
     for( unsigned int k=0; k<_objective_num; k++ ) {
         _references[k]->m_sparsity_level = res[k];
     }

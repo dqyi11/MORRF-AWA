@@ -191,7 +191,8 @@ RRTNode* RRTree::find_ancestor( RRTNode* p_node ) {
     return get_ancestor( p_node );
 }
 
-Path* RRTree::find_path() {
+Path* RRTree:: find_path() {
+
     Path* p_new_path = new Path( m_start, m_goal, m_objective_num );
 
     list<RRTNode*> node_list;
@@ -201,8 +202,6 @@ Path* RRTree::find_path() {
     double delta_fitness = 0.0;
     p_first_node = get_closet_to_goal( delta_cost, delta_fitness );
 
-    std::cout << "get closet to goal " << p_first_node << std::endl;
-
     if( p_first_node!=NULL ) {
 
         if( mp_parent ) {
@@ -210,9 +209,8 @@ Path* RRTree::find_path() {
                 return NULL;
             }
         }
-        std::cout << "get parent node list" << std::endl;
         get_parent_node_list( p_first_node, node_list );
-        std::cout << "finish get parent node list" << std::endl;
+
         for( list<RRTNode*>::reverse_iterator rit=node_list.rbegin();
             rit!=node_list.rend(); ++rit ) {
             RRTNode* pNode = (*rit);
@@ -258,9 +256,8 @@ bool RRTree::are_all_nodes_fitness_positive() {
 }
 
 bool RRTree::update_current_best() {
-    std::cout << "RRTree::update_current_best" << std::endl;
+
     mp_current_best = find_path();
-    std::cout << "find path " << std::endl;
     if( mp_current_best ) {
         for(unsigned int k=0;k<m_objective_num;k++) {
             m_current_best_cost[k] = mp_current_best->m_cost[k];
@@ -504,8 +501,8 @@ RRTNode * SubproblemTree::get_closet_to_goal( vector<double>& delta_cost, double
         for( std::list<KDNode2D>::iterator it=near_nodes.begin();
             it != near_nodes.end(); it++ ) {
             KDNode2D kd_node = (*it);
-            int index = m_index + m_objective_num;
-            RRTNode* p_node = kd_node.mp_morrf_node->m_nodes[index];
+            //int index = m_index + m_objective_num;
+            RRTNode* p_node = kd_node.mp_morrf_node->m_nodes[m_index];
 
             if( mp_parent->_is_obstacle_free( p_node->m_pos, m_goal ) ) {
                 vector<double> new_delta_cost(m_objective_num, 0.0);
