@@ -29,7 +29,7 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
     _segment_length = segmentLength;
 
     _theta = 4;
-    _sparsity_k = _subproblem_num * 0.4;
+    _sparsity_k = _subproblem_num * 0.8;
 
     _pp_map_info = new int*[_sampling_width];
     for( unsigned int i=0; i<_sampling_width; i++ ) {
