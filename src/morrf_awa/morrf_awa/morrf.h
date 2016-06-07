@@ -85,6 +85,9 @@ public:
     void construct( std::vector<POS2D>& pos_seq,  std::vector<SubproblemTree*>& new_subproblems );
 
     void optimize();
+
+    std::vector< SubproblemTree* > add_subproblem_trees( unsigned int num );
+    std::vector< std::vector< float > > create_weights(unsigned int num);
 protected:
     void _init_weights();
     void _deinit_weights();
@@ -106,7 +109,7 @@ private:
     std::vector<COST_FUNC_PTR> _funcs;
     std::vector<int**> _fitness_distributions;
 
-    std::vector< std::vector<double> > _weights;
+    std::vector< std::vector<float> > _weights;
 
     std::vector<SubproblemTree*> _subproblems;
     std::vector<ReferenceTree*> _references;

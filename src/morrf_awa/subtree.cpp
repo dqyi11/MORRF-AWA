@@ -27,7 +27,7 @@ Path::Path( POS2D start, POS2D goal, int objectiveNum ) {
     m_fitness = 0.0;
 }
 
-RRTree::RRTree( MORRF* parent, unsigned int objective_num, std::vector<double>  weight, unsigned int index ) {
+RRTree::RRTree( MORRF* parent, unsigned int objective_num, std::vector<float>  weight, unsigned int index ) {
     mp_parent = parent;
     m_type = UNKNOWN;
     m_objective_num = objective_num;
@@ -267,7 +267,7 @@ bool RRTree::update_current_best() {
     return false;
 }
 
-ReferenceTree::ReferenceTree( MORRF* parent, unsigned int objective_num, std::vector<double> weight, unsigned int index )
+ReferenceTree::ReferenceTree( MORRF* parent, unsigned int objective_num, std::vector<float> weight, unsigned int index )
     : RRTree( parent, objective_num, weight, index ) {
     m_type = REFERENCE;
 }
@@ -393,7 +393,7 @@ bool ReferenceTree::update_current_best() {
     return false;
 }
 
-SubproblemTree::SubproblemTree( MORRF* parent, unsigned int objective_num, vector<double> weight, unsigned int index )
+SubproblemTree::SubproblemTree( MORRF* parent, unsigned int objective_num, vector<float> weight, unsigned int index )
     : RRTree(parent, objective_num, weight, index ) {
     m_type = SUBPROBLEM;
 }

@@ -58,8 +58,18 @@ void MORRF::_init_weights() {
     _deinit_weights();
     _weights.clear();
 
-    for( unsigned int i=0; i<_subproblem_num; i++ ) {
-        vector<double> weight( _objective_num, 0.0 );
+    _weights = create_weights( _subproblem_num );
+}
+
+void MORRF::_deinit_weights() {
+    _weights.clear();
+}
+
+std::vector< std::vector< float > > MORRF::create_weights(unsigned int num) {
+    std::vector< std::vector< float > > weights;
+
+    for( unsigned int i=0; i<num; i++ ) {
+        vector<float> weight( _objective_num, 0.0 );
         std::vector<float> temp_array;
         temp_array.push_back(0.0);
         for( unsigned int j=0; j<_objective_num-1; j++ ) {
@@ -69,13 +79,11 @@ void MORRF::_init_weights() {
         sort(temp_array.begin(), temp_array.end());
         for( unsigned int j=0; j<_objective_num; j++ ) {
             weight[j] = temp_array[j+1] - temp_array[j];
-        } 
-        _weights.push_back( weight );
+        }
+        weights.push_back( weight );
     }
-}
 
-void MORRF::_deinit_weights() {
-    _weights.clear();
+    return weights;
 }
 
 void MORRF::init(POS2D start, POS2D goal) {
@@ -87,7 +95,7 @@ void MORRF::init(POS2D start, POS2D goal) {
     root.mp_morrf_node->m_nodes = std::vector<RRTNode*>(_objective_num+_subproblem_num, NULL);
 
     for( unsigned int k=0; k<_objective_num; k++ ) {
-        vector<double> weight(_objective_num, 0.0);
+        vector<float> weight(_objective_num, 0.0);
         weight[k] = 1.0;
         ReferenceTree * p_ref_tree = new ReferenceTree( this, _objective_num, weight, k );
         RRTNode * p_root_node = p_ref_tree->init( start, goal );
@@ -713,21 +721,32 @@ void MORRF::construct( vector<POS2D>& pos_seq, vector<SubproblemTree*>& new_subp
 
     for(unsigned int i=0; i<pos_seq.size();i++) {
         POS2D current_pos = pos_seq[i];
+        KDNode2D current_node = find_exact( current_pos );
+        for(unsigned int j=0; j<new_subproblems.size();j++) {
+            RRTNode* p_new_sub_node = new_subproblems[j]->create_new_node( current_pos );
+            current_node.mp_morrf_node->m_nodes.push_back( p_new_sub_node );
+        }
+    }
+
+    for(unsigned int i=0; i<pos_seq.size();i++) {
+        POS2D current_pos = pos_seq[i];
+
+        KDNode2D current_node = find_exact( current_pos );
         KDNode2D nearest_node = find_nearest( current_pos );
         std::list<KDNode2D> near_nodes = find_near( current_pos );
 
-        KDNode2D current_node = find_exact( current_pos );
         for(unsigned int m=0; m<new_subproblems.size();m++) {
-            SubproblemTree* p_sub_tree = new_subproblems[i];
 
+            SubproblemTree* p_sub_tree = new_subproblems[i];
             if(p_sub_tree) {
                 int index = p_sub_tree->m_index;
 
-                RRTNode* p_new_sub_node = p_sub_tree->create_new_node( current_pos );
-                current_node.mp_morrf_node->m_nodes.push_back( p_new_sub_node );
-
                 RRTNode* p_nearest_sub_node = nearest_node.mp_morrf_node->m_nodes[index];
                 RRTNode* p_current_sub_node = current_node.mp_morrf_node->m_nodes[index];
+                if( p_nearest_sub_node ) {
+                    std::cout << "nearest node " << p_nearest_sub_node->m_pos << std::endl;
+                }
+
                 std::list<RRTNode*> near_sub_nodes;
                 near_sub_nodes.clear();
                 for( std::list<KDNode2D>::iterator its = near_nodes.begin();
@@ -762,4 +781,30 @@ void MORRF::dump_subproblem_sparsity( std::string filename ) {
     }
 
     sparsity_file.close();
+}
+
+std::vector< SubproblemTree* > MORRF::add_subproblem_trees( unsigned int num ) {
+
+    std::vector< SubproblemTree* > trees = std::vector< SubproblemTree* >(num, NULL);
+
+    // sampling weights
+    std::vector< std::vector< float > > weights = create_weights(num);
+
+    // create trees
+    unsigned int index = _objective_num + _subproblems.size();
+    for(unsigned int i=0;i<num;i++) {
+        trees[i] = new SubproblemTree(this, _objective_num, weights[i], index);
+        index ++;
+    }
+
+    // merge trees
+    for(unsigned int i=0;i<num;i++) {
+        _subproblems.push_back(trees[i]);
+        _weights.push_back(weights[i]);
+    }
+
+    // expand trees
+    construct( _sampled_positions,  trees );
+
+    return trees;
 }
