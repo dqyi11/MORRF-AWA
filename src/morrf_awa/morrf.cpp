@@ -88,6 +88,9 @@ std::vector< std::vector< float > > MORRF::create_weights(unsigned int num) {
 
 void MORRF::init(POS2D start, POS2D goal) {
 
+    m_start = start;
+    m_goal = goal;
+
     _init_weights();
 
     KDNode2D root(start);    
@@ -110,6 +113,7 @@ void MORRF::init(POS2D start, POS2D goal) {
         _subproblems.push_back( p_sub_tree );
     }
     _p_kd_tree->insert( root );
+    _morrf_nodes.push_back(root.mp_morrf_node);
     _current_iteration = 0;
 }
 
@@ -659,14 +663,18 @@ vector<Path*> MORRF::get_paths() {
         ReferenceTree* p_ref_tree = (*it);
         if(p_ref_tree) {
             Path* pRefPath = p_ref_tree->mp_current_best;
-            paths.push_back(pRefPath);
+            if(pRefPath) {
+              paths.push_back(pRefPath);
+            }
         }
     }
     for(vector<SubproblemTree*>::iterator it=_subproblems.begin();it!=_subproblems.end();it++) {
         SubproblemTree* p_sub_tree = (*it);
         if(p_sub_tree) {
             Path* pSubPath = p_sub_tree->mp_current_best;
-            paths.push_back(pSubPath);
+            if(pSubPath) {
+              paths.push_back(pSubPath);
+            }
         }
     }
     return paths;
@@ -719,6 +727,8 @@ bool MORRF::is_ref_tree_min_cost() {
 
 void MORRF::construct( vector<MORRFNode*>& pos_seq, vector<SubproblemTree*>& new_subproblems ) {
 
+    std::cout << "CONSTRUCT " << pos_seq.size() << std::endl;
+
     for(unsigned int i=0; i<pos_seq.size();i++) {
         MORRFNode* p_morrf_node = pos_seq[i];
         for(unsigned int j=0; j<new_subproblems.size();j++) {
@@ -749,6 +759,9 @@ void MORRF::construct( vector<MORRFNode*>& pos_seq, vector<SubproblemTree*>& new
                     KDNode2D kd_node = (*its);
                     RRTNode* p_sub_node = kd_node.mp_morrf_node->m_nodes[index];
                     near_sub_nodes.push_back( p_sub_node );
+                    if( kd_node[0] != p_sub_node->m_pos[0] && kd_node[1] != p_sub_node->m_pos[1] ) {
+                        std::cout << "not match " << kd_node << " and " << p_sub_node->m_pos << std::endl;
+                    }
                 }
 
                 _subproblems[m]->attach_new_node( p_current_sub_node,  near_sub_nodes );
@@ -789,6 +802,8 @@ std::vector< SubproblemTree* > MORRF::add_subproblem_trees( unsigned int num ) {
     unsigned int index = _objective_num + _subproblems.size();
     for(unsigned int i=0;i<num;i++) {
         trees[i] = new SubproblemTree(this, _objective_num, weights[i], index);
+        RRTNode * p_root_node = trees[i]->init( m_start, m_goal );
+        _morrf_nodes[0]->m_nodes.push_back(p_root_node);
         index ++;
     }
 
@@ -798,8 +813,12 @@ std::vector< SubproblemTree* > MORRF::add_subproblem_trees( unsigned int num ) {
         _weights.push_back(weights[i]);
     }
 
+    std::cout << "MORRF node size " << _morrf_nodes.size() << std::endl;
     // expand trees
-    construct( _morrf_nodes,  trees );
+    std::vector<MORRFNode*>::const_iterator first = _morrf_nodes.begin()+1;
+    std::vector<MORRFNode*>::const_iterator last = _morrf_nodes.begin()+_morrf_nodes.size();
+    std::vector<MORRFNode*> seq(first, last);
+    construct( seq,  trees );
 
     return trees;
 }

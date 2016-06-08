@@ -193,7 +193,7 @@ void MainWindow::onRun() {
     //mpMORRF->dump_map_info("map.txt");
     mpMORRF->dump_weights("weights.txt");
 
-    while(mpMORRF->get_current_iteration() <= mpViz->mMOPPInfo.mMaxIterationNum) {
+    while(mpMORRF->get_current_iteration() < mpViz->mMOPPInfo.mMaxIterationNum) {
         QString msg = "CurrentIteration " + QString::number(mpMORRF->get_current_iteration()) + " ";
         msg += "(" + QString::number(mpMORRF->get_ball_radius()) + ")";
         qDebug(msg.toStdString().c_str());
