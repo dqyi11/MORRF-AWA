@@ -207,6 +207,7 @@ void MainWindow::onRun() {
     }
 
     mpMORRF->add_subproblem_trees(20);
+    mpViz->mMOPPInfo.mSubproblemNum += 20;
     updateStatus();
     repaint();
 
