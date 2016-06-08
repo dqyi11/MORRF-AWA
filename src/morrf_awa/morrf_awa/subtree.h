@@ -51,7 +51,7 @@ public:
 
     std::list<RRTNode*> find_all_children( RRTNode* pNode );
 
-    virtual void attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes ) = 0;
+    virtual void attach_new_node( RRTNode* p_node_new, std::list<RRTNode*> near_nodes ) = 0;
     virtual void rewire_near_nodes( RRTNode* p_node_new, std::list<RRTNode*> near_nodes ) = 0;
     virtual RRTNode * get_closet_to_goal( std::vector<double>& delta_cost, double& delta_fitness ) = 0;
 
@@ -86,7 +86,7 @@ class ReferenceTree : public RRTree {
 public:
     ReferenceTree( MORRF* parent, unsigned int objective_num, std::vector<float> weight, unsigned int index );
 
-    virtual void attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes );
+    virtual void attach_new_node( RRTNode* p_node_new, std::list<RRTNode*> near_nodes );
     virtual void rewire_near_nodes( RRTNode* p_node_new, std::list<RRTNode*> near_nodes );
     virtual RRTNode * get_closet_to_goal( std::vector<double>& delta_cost, double& delta_fitness );
 
@@ -100,7 +100,7 @@ class SubproblemTree : public RRTree {
 public:
     SubproblemTree( MORRF* parent, unsigned int objective_num, std::vector<float> weight, unsigned int index );
 
-    virtual void attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes );
+    virtual void attach_new_node( RRTNode* p_node_new, std::list<RRTNode*> near_nodes );
     virtual void rewire_near_nodes( RRTNode* p_node_new, std::list<RRTNode*> near_nodes );
     virtual RRTNode * get_closet_to_goal( std::vector<double>& delta_cost, double& delta_fitness );
 

@@ -206,9 +206,11 @@ void MainWindow::onRun() {
         repaint();
     }
 
+    /*
     mpMORRF->add_subproblem_trees(20);
     updateStatus();
     repaint();
+    */
 
     mpMORRF->dump_subproblem_sparsity("sparsity.txt");
 

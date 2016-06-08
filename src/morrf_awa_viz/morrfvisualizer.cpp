@@ -82,6 +82,7 @@ void MORRFVisualizer::paintEvent(QPaintEvent * e) {
             }
         }
 
+        /*
         if( mCurrentTreeIdx < mMOPPInfo.mFoundPaths.size() ) {
             Path * p = mMOPPInfo.mFoundPaths[mCurrentTreeIdx];
             QPainter painter(this);
@@ -96,7 +97,7 @@ void MORRFVisualizer::paintEvent(QPaintEvent * e) {
                     painter.drawLine(QPoint(p->m_waypoints[i][0], p->m_waypoints[i][1]), QPoint(p->m_waypoints[i+1][0], p->m_waypoints[i+1][1]));
                 }
             }
-        }
+        }*/
     }
 
     if( mMOPPInfo.mStart.x() >= 0 && mMOPPInfo.mStart.y() >= 0 ) {

@@ -272,16 +272,22 @@ ReferenceTree::ReferenceTree( MORRF* parent, unsigned int objective_num, std::ve
     m_type = REFERENCE;
 }
 
-void ReferenceTree::attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes ) {
-    double min_new_node_fitness = p_nearest_node->m_fitness + mp_parent->calc_kth_cost( p_nearest_node->m_pos, p_node_new->m_pos, m_index );
-    RRTNode* p_min_node = p_nearest_node;
+void ReferenceTree::attach_new_node( RRTNode* p_node_new, std::list<RRTNode*> near_nodes ) {
+    double min_new_node_fitness = std::numeric_limits<double>::max(); //p_nearest_node->m_fitness + mp_parent->calc_kth_cost( p_nearest_node->m_pos, p_node_new->m_pos, m_index );
+    RRTNode* p_min_node = NULL; //p_nearest_node;
+
+
 
     for( std::list<RRTNode*>::iterator it=near_nodes.begin(); it!=near_nodes.end(); it++ ) {
-        RRTNode* pNearNode = *it;
-        if ( true == mp_parent->_is_obstacle_free( pNearNode->m_pos, p_node_new->m_pos ) ) {
-            double fitness = pNearNode->m_fitness + mp_parent->calc_kth_cost( pNearNode->m_pos, p_node_new->m_pos, m_index );
-            if (fitness < min_new_node_fitness) {
-                p_min_node = pNearNode;
+        RRTNode* p_near_node = *it;
+        if( p_near_node->m_pos == p_node_new->m_pos ) {
+            continue;
+        }
+
+        if ( true == mp_parent->_is_obstacle_free( p_near_node->m_pos, p_node_new->m_pos ) ) {
+            double fitness = p_near_node->m_fitness + mp_parent->calc_kth_cost( p_near_node->m_pos, p_node_new->m_pos, m_index );
+            if (fitness < min_new_node_fitness || p_min_node == NULL ) {
+                p_min_node = p_near_node;
                 min_new_node_fitness = fitness;
             }
         }
@@ -398,19 +404,19 @@ SubproblemTree::SubproblemTree( MORRF* parent, unsigned int objective_num, vecto
     m_type = SUBPROBLEM;
 }
 
-void SubproblemTree::attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, list<RRTNode*> near_nodes ) {
+void SubproblemTree::attach_new_node( RRTNode* p_node_new, list<RRTNode*> near_nodes ) {
     vector<double> min_new_node_cost( m_objective_num, 0.0 );
-    vector<double> min_new_node_cost_delta( m_objective_num, 0.0 );
-    mp_parent->calc_cost( p_nearest_node->m_pos, p_node_new->m_pos, min_new_node_cost_delta );
-    for( unsigned int k = 0; k < m_objective_num; k++ ) {
-        min_new_node_cost[k] = p_nearest_node->m_cost[k] + min_new_node_cost_delta[k];
-    }
-    double min_new_node_fitness = mp_parent->calc_fitness( min_new_node_cost, m_weight, p_node_new );
 
-    RRTNode* p_min_node = p_nearest_node;
+    RRTNode* p_min_node = NULL;
+    double min_new_node_fitness = std::numeric_limits<double>::max();
+
 
     for( list<RRTNode*>::iterator it = near_nodes.begin(); it != near_nodes.end(); it++ ) {
         RRTNode* p_near_node = (*it);
+
+        if(p_near_node->m_pos == p_node_new->m_pos){
+            continue;
+        }
         if ( true == mp_parent->_is_obstacle_free(p_near_node->m_pos, p_node_new->m_pos) ) {
             vector<double> cost_temp(m_objective_num, 0.0);
             vector<double> cost_delta(m_objective_num, 0.0);
@@ -419,7 +425,7 @@ void SubproblemTree::attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_no
                 cost_temp[k] = p_near_node->m_cost[k] + cost_delta[k];
             }
             double fitness = mp_parent->calc_fitness(cost_temp, m_weight, p_node_new);
-            if ( fitness < min_new_node_fitness ) {
+            if ( fitness < min_new_node_fitness || p_min_node == NULL ) {
                 p_min_node = p_near_node;
                 min_new_node_fitness = fitness;
                 for( unsigned int k = 0; k < m_objective_num; k++ ) {

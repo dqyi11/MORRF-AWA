@@ -82,7 +82,7 @@ public:
     double get_ball_radius() { return _ball_radius; }
     bool update_path_cost( Path *p );
 
-    void construct( std::vector<POS2D>& pos_seq,  std::vector<SubproblemTree*>& new_subproblems );
+    void construct( std::vector<MORRFNode*>& pos_seq,  std::vector<SubproblemTree*>& new_subproblems );
 
     void optimize();
 
@@ -123,7 +123,7 @@ private:
     double _segment_length;
     int _obs_check_resolution;
 
-    std::list<MORRFNode*> _morrf_nodes;   
+    std::vector<MORRFNode*> _morrf_nodes;
 
     double _theta;
     int _current_iteration;
