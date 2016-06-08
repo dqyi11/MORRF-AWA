@@ -191,8 +191,7 @@ RRTNode* RRTree::find_ancestor( RRTNode* p_node ) {
     return get_ancestor( p_node );
 }
 
-Path* RRTree:: find_path() {
-
+Path* RRTree::find_path() {
     Path* p_new_path = new Path( m_start, m_goal, m_objective_num );
 
     list<RRTNode*> node_list;
@@ -275,7 +274,6 @@ ReferenceTree::ReferenceTree( MORRF* parent, unsigned int objective_num, std::ve
 void ReferenceTree::attach_new_node( RRTNode* p_node_new, std::list<RRTNode*> near_nodes ) {
     double min_new_node_fitness = std::numeric_limits<double>::max(); //p_nearest_node->m_fitness + mp_parent->calc_kth_cost( p_nearest_node->m_pos, p_node_new->m_pos, m_index );
     RRTNode* p_min_node = NULL; //p_nearest_node;
-
 
 
     for( std::list<RRTNode*>::iterator it=near_nodes.begin(); it!=near_nodes.end(); it++ ) {
@@ -533,5 +531,3 @@ RRTNode * SubproblemTree::get_closet_to_goal( vector<double>& delta_cost, double
     }
     return p_closest_node;
 }
-
-

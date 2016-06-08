@@ -1,10 +1,11 @@
 #ifndef SUBTREE_H
 #define SUBTREE_H
 
-#include "KDTree2D.h"
-#include "objective_knn.h"
 #include <vector>
 #include <list>
+
+#include "morrf_awa/KDTree2D.h"
+#include "morrf_awa/objective_knn.h"
 
 class MORRFNode;
 class MORRF;
