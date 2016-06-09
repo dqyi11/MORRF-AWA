@@ -23,6 +23,7 @@ public:
     RRTNode * mp_parent;
     MORRFNode* mp_host_node;
 
+    bool m_added;
     std::list<RRTNode*> m_child_nodes;
 };
 
