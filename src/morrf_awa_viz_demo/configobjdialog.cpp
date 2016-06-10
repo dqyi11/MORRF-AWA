@@ -28,7 +28,7 @@ ConfigObjDialog::ConfigObjDialog(MainWindow * parent) {
     mpLabelIterationNum = new QLabel("Iteration Num: ");
     mpLineEditIterationNum = new QLineEdit();
     mpLineEditIterationNum->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mMaxIterationNum));
-    mpLineEditIterationNum->setMaximumWidth(40);
+    mpLineEditIterationNum->setMaximumWidth(80);
     mpLabelSegmentLength = new QLabel("Segment Len: ");
     mpLineEditSegmentLength = new QLineEdit();
     mpLineEditSegmentLength->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mSegmentLength));
@@ -139,7 +139,6 @@ void ConfigObjDialog::updateDisplay() {
                     mpListWidget->addItem(objFilename);
                 }
             }
-
             mpComboType->setCurrentIndex((int)mpParentWindow->mpViz->mMOPPInfo.mMethodType);
         }
     }

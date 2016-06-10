@@ -50,6 +50,7 @@ void MainWindow::createMenuBar() {
     mpEditMenu->addAction(mpLoadMapAction);
     mpEditMenu->addAction(mpLoadObjAction);
     mpEditMenu->addAction(mpRunAction);
+    mpEditMenu->addAction(mpResetAction);
 
     mpContextMenu = new QMenu();
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -65,6 +66,7 @@ void MainWindow::createActions() {
     mpLoadMapAction = new QAction("Load Map", this);
     mpLoadObjAction = new QAction("Load Objectives", this);
     mpRunAction = new QAction("Run", this);
+    mpResetAction = new QAction("Reset", this);
 
     connect(mpOpenAction, SIGNAL(triggered()), this, SLOT(onOpen()));
     connect(mpSaveAction, SIGNAL(triggered()), this, SLOT(onSave()));
@@ -72,6 +74,7 @@ void MainWindow::createActions() {
     connect(mpLoadMapAction, SIGNAL(triggered()), this, SLOT(onLoadMap()));
     connect(mpLoadObjAction, SIGNAL(triggered()), this, SLOT(onLoadObj()));
     connect(mpRunAction, SIGNAL(triggered()), this, SLOT(onRun()));
+    connect(mpResetAction, SIGNAL(triggered()), this, SLOT(onReset()));
 
     mpAddStartAction = new QAction("Add Start", this);
     mpAddGoalAction = new QAction("Add Goal", this);
@@ -100,6 +103,10 @@ void MainWindow::onSave() {
 
 void MainWindow::onExport() {
     QString pathFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Txt Files (*.txt)"));
+    if(mpMORRF) {
+        std::vector<Path*> paths = mpMORRF->get_paths();
+        mpViz->mMOPPInfo.loadPaths(paths);
+    }
     exportPaths(pathFilename);
 }
 
@@ -164,34 +171,10 @@ void MainWindow::onRun() {
         msgBox.exec();
         return;
     }
-    if(mpMORRF) {
-        delete mpMORRF;
-        mpMORRF = NULL;
+
+    if(mpMORRF == NULL) {
+        initMORRF();
     }
-
-    mpViz->mMOPPInfo.initObstacleInfo();
-    mpViz->mMOPPInfo.initFuncsParams();
-    QString msg = "RUNNING MORRF ... \n";
-    msg += "ObjNum( " + QString::number(mpViz->mMOPPInfo.mObjectiveNum) + " ) \n";
-    msg += "SubproblemNum( " + QString::number(mpViz->mMOPPInfo.mSubproblemNum) + " ) \n";
-    msg += "SegmentLen( " + QString::number(mpViz->mMOPPInfo.mSegmentLength) + " ) \n";
-    msg += "MaxIterationNum( " + QString::number(mpViz->mMOPPInfo.mMaxIterationNum) + " ) \n";
-    qDebug(msg.toStdString().c_str());
-
-    mpMORRF = new MORRF(mpMap->width(), mpMap->height(), mpViz->mMOPPInfo.mObjectiveNum, mpViz->mMOPPInfo.mSubproblemNum, mpViz->mMOPPInfo.mSegmentLength, mpViz->mMOPPInfo.mMethodType);
-
-    mpMORRF->add_funcs(mpViz->mMOPPInfo.mFuncs, mpViz->mMOPPInfo.mDistributions);
-    POS2D start(mpViz->mMOPPInfo.mStart.x(), mpViz->mMOPPInfo.mStart.y());
-    POS2D goal(mpViz->mMOPPInfo.mGoal.x(), mpViz->mMOPPInfo.mGoal.y());
-
-    mpMORRF->init(start, goal);
-
-    //mpViz->mMOPPInfo.dumpObstacleInfo("map1.txt");
-    mpMORRF->load_map(mpViz->mMOPPInfo.mppObstacle);
-    mpViz->setMORRF(mpMORRF);
-
-    //mpMORRF->dump_map_info("map.txt");
-    mpMORRF->dump_weights("weights.txt");
 
     while(mpMORRF->get_current_iteration() < mpViz->mMOPPInfo.mMaxIterationNum) {
         QString msg = "CurrentIteration " + QString::number(mpMORRF->get_current_iteration()) + " ";
@@ -206,16 +189,15 @@ void MainWindow::onRun() {
         repaint();
     }
 
+    /*
     mpMORRF->add_subproblem_trees(20);
     mpViz->mMOPPInfo.mSubproblemNum += 20;
     updateStatus();
     repaint();
+    */
 
-    mpMORRF->dump_subproblem_sparsity("sparsity.txt");
+    //mpMORRF->dump_subproblem_sparsity("sparsity.txt");
 
-    std::vector<Path*> paths = mpMORRF->get_paths();
-    mpViz->mMOPPInfo.loadPaths(paths);
-    repaint();
 }
 
 void MainWindow::onAddStart() {
@@ -311,6 +293,7 @@ void MainWindow::initMORRF() {
         delete mpMORRF;
         mpMORRF = NULL;
     }
+
     mpViz->mMOPPInfo.initObstacleInfo();
     mpViz->mMOPPInfo.initFuncsParams();
     QString msg = "RUNNING MORRF ... \n";
@@ -321,6 +304,7 @@ void MainWindow::initMORRF() {
     qDebug(msg.toStdString().c_str());
 
     mpMORRF = new MORRF(mpMap->width(), mpMap->height(), mpViz->mMOPPInfo.mObjectiveNum, mpViz->mMOPPInfo.mSubproblemNum, mpViz->mMOPPInfo.mSegmentLength, mpViz->mMOPPInfo.mMethodType);
+
     mpMORRF->add_funcs(mpViz->mMOPPInfo.mFuncs, mpViz->mMOPPInfo.mDistributions);
     POS2D start(mpViz->mMOPPInfo.mStart.x(), mpViz->mMOPPInfo.mStart.y());
     POS2D goal(mpViz->mMOPPInfo.mGoal.x(), mpViz->mMOPPInfo.mGoal.y());
@@ -342,4 +326,17 @@ bool MainWindow::saveConfiguration(QString filename) {
         return mpViz->mMOPPInfo.saveToFile(filename);
     }
     return false;
+}
+
+void MainWindow::onReset() {
+    if(mpMORRF) {
+        delete mpMORRF;
+        mpMORRF = NULL;
+    }
+    mpViz->reset();
+    if(mpStatusProgressBar) {
+        mpStatusProgressBar->setValue(0);
+    }
+    updateStatus();
+    repaint();
 }

@@ -55,6 +55,8 @@ private:
     QProgressBar* mpStatusProgressBar;
     QPixmap*      mpMap;
 
+    QAction*      mpResetAction;
+
     QPoint mCursorPoint;
 
     ConfigObjDialog * mpConfigObjDialog;
@@ -71,6 +73,7 @@ private slots:
     void onRun();
     void onAddStart();
     void onAddGoal();
+    void onReset();
 };
 
 #endif // MAINWINDOW_H
