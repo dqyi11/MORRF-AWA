@@ -29,7 +29,7 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
     _segment_length = segmentLength;
 
     _theta = 4;
-    _sparsity_k = _subproblem_num * 0.8;
+    _sparsity_k = 2; //_subproblem_num * 0.8;
 
     _pp_map_info = new int*[_sampling_width];
     for( unsigned int i=0; i<_sampling_width; i++ ) {
@@ -42,7 +42,6 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
 
 MORRF::~MORRF() {
     _deinit_weights();
-
     if( _p_kd_tree ) {
         delete _p_kd_tree;
         _p_kd_tree = NULL;
@@ -316,6 +315,7 @@ void MORRF::extend() {
         // update current best and calculate sparsity level
         update_sparsity_level();
         std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare);
+
     }
 
     if(_current_iteration % 10 == 0) {
