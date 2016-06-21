@@ -33,6 +33,8 @@ public:
 
     void reset();
 
+    std::vector< std::vector<float> > loadWeightFromFile(QString filename);
+
     static double calcDist(POS2D pos_a, POS2D pos_b, int** distribution, void* tree) {
         double dist = 0.0;
         if (pos_a == pos_b)
@@ -130,6 +132,9 @@ public:
 
     bool mMinDistEnabled;
     std::vector<QString> mObjectiveFiles;
+
+    bool mLoadWeightFile;
+    QString mWeightFile;
 
     std::vector<COST_FUNC_PTR> mFuncs;
     std::vector<int**>         mDistributions;

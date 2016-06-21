@@ -25,7 +25,7 @@ public:
 
     void add_funcs( std::vector<COST_FUNC_PTR> funcs, std::vector<int**> fitnessDistributions );
 
-    void init(POS2D start, POS2D goal);
+    void init(POS2D start, POS2D goal, std::vector< std::vector<float> > weights = std::vector< std::vector<float> >(0));
 
     void load_map( int **pp_map );
     POS2D sampling();
@@ -44,6 +44,7 @@ public:
     double calc_kth_cost( POS2D& pos_a, POS2D& pos_b, unsigned int k );
     double calc_fitness( std::vector<double>& cost, std::vector<double>& weight, RRTNode* node );
     double calc_fitness( std::vector<double>& cost, std::vector<double>& weight, POS2D& pos );
+    double calc_fitness( std::vector<double>& cost, std::vector<double>& weight, std::vector<double>& utopia );
 
     bool get_utopia_reference_vector( POS2D& pos, std::vector<double>& utopia );
     bool get_utopia_reference_vector( RRTNode* p_node, std::vector<double>& utopia );
@@ -87,12 +88,15 @@ public:
 
     void optimize();
 
+    void record();
+    void write_hist_cost(std::string filename);
+
     std::vector< SubproblemTree* > add_subproblem_trees( unsigned int num );
     std::vector< std::vector< float > > create_weights(unsigned int num);
     std::vector< std::vector< float > > ws_transform( std::vector< std::vector< float > >& weights );
     std::vector< float > ws_transform( std::vector< float >& weight );
 protected:
-    void _init_weights();
+    void _init_weights( std::vector< std::vector<float> >& weights );
     void _deinit_weights();
 
     void update_sparsity_level();
@@ -113,6 +117,7 @@ private:
     std::vector<int**> _fitness_distributions;
 
     std::vector< std::vector<float> > _weights;
+    std::vector< std::vector<float> > _ws_weights;
 
     std::vector<SubproblemTree*> _subproblems;
     std::vector<ReferenceTree*> _references;
@@ -128,6 +133,7 @@ private:
     double _ball_radius;
     double _segment_length;
     int _obs_check_resolution;
+    bool _enable_init_weight_ws_transform;
 
     std::vector<MORRFNode*> _morrf_nodes;
 

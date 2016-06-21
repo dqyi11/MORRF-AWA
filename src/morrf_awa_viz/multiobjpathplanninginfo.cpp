@@ -31,6 +31,9 @@ MultiObjPathPlanningInfo::MultiObjPathPlanningInfo() {
     mMapWidth = 0;
     mMapHeight = 0;
 
+    mLoadWeightFile = false;
+    mWeightFile = "";
+
     mppObstacle = NULL;
 
     mMethodType = MORRF::WEIGHTED_SUM;
@@ -155,6 +158,9 @@ void MultiObjPathPlanningInfo::read(const QJsonObject &json) {
     mSubproblemNum = json["subproblemNum"].toInt();
     mMaxIterationNum = json["maxIterationNum"].toInt();
     mSegmentLength = json["segmentLength"].toDouble();
+
+    mLoadWeightFile = json["loadWeightFile"].toBool();
+    mWeightFile = json["weightFile"].toString();
 }
 
 void MultiObjPathPlanningInfo::write(QJsonObject &json) const {
@@ -183,6 +189,9 @@ void MultiObjPathPlanningInfo::write(QJsonObject &json) const {
     json["subproblemNum"] = mSubproblemNum;
     json["maxIterationNum"] = mMaxIterationNum;
     json["segmentLength"] = mSegmentLength;
+
+    json["loadWeightFile"] = mLoadWeightFile;
+    json["weightFile"] = mWeightFile;
 }
 
 bool MultiObjPathPlanningInfo::saveToFile( QString filename ) {
@@ -249,4 +258,35 @@ void MultiObjPathPlanningInfo::exportPaths( QString filename ) {
 
 void MultiObjPathPlanningInfo::reset() {
 
+}
+
+std::vector< std::vector<float> > MultiObjPathPlanningInfo::loadWeightFromFile(QString filename) {
+    std::vector< std::vector<float> > weights;
+
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+    QTextStream in(&file);
+
+    while(!in.atEnd()) {
+        QString line = in.readLine();
+        QStringList fields = line.split(" ");
+
+        std::vector<float> weight;
+        for(QStringList::iterator it = fields.begin(); it != fields.end(); it++) {
+            QString field = (*it);
+            if(field.trimmed().compare("")!=0) {
+                float w = field.toFloat();
+                weight.push_back(w);
+            }
+        }
+        if(weight.size() > 0) {
+            weights.push_back(weight);
+        }
+        std::cout << "w size " << weight.size() << std::endl;
+    }
+
+    file.close();
+
+    std::cout << "weight size " << weights.size() << std::endl;
+    return weights;
 }

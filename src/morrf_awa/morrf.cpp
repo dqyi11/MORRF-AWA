@@ -19,6 +19,7 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
     _objective_num = objective_num;
     _subproblem_num = subproblem_num;
     _type = type;
+    _enable_init_weight_ws_transform = false;
 
     _p_kd_tree = new KDTree2D( std::ptr_fun(tac) );
 
@@ -53,19 +54,30 @@ void MORRF::add_funcs( std::vector<COST_FUNC_PTR> funcs, std::vector<int**> fitn
     _fitness_distributions = fitnessDistributions;
 }
 
-void MORRF::_init_weights() {
+void MORRF::_init_weights( std::vector< std::vector<float> >& weights ) {
     _deinit_weights();
-    _weights.clear();
+    bool auto_gen = false;
+    if( weights.size() != _subproblem_num ) {
+        auto_gen = true;
+    }
 
+    if(auto_gen) {
+        _weights = create_weights( _subproblem_num );
+    }
+    else {
+        _weights = weights;
+    }
 
-    std::vector< std::vector<float> > weights = create_weights( _subproblem_num );
-    save_weights( weights, "./before_weights.txt");
-    _weights = ws_transform( weights );
-    save_weights( _weights, "./after_weights.txt");
+    if(_enable_init_weight_ws_transform) {
+        save_weights( _weights, "./before_weights.txt");
+        _ws_weights = ws_transform( _weights );
+        save_weights( _weights, "./after_weights.txt");
+    }
 }
 
 void MORRF::_deinit_weights() {
     _weights.clear();
+    _ws_weights.clear();
 }
 
 std::vector< std::vector< float > > MORRF::create_weights(unsigned int num) {
@@ -89,12 +101,12 @@ std::vector< std::vector< float > > MORRF::create_weights(unsigned int num) {
     return weights;
 }
 
-void MORRF::init(POS2D start, POS2D goal) {
+void MORRF::init(POS2D start, POS2D goal, std::vector< std::vector<float> > weights) {
 
     m_start = start;
     m_goal = goal;
 
-    _init_weights();
+    _init_weights( weights );
 
     KDNode2D root(start);
     root.mp_morrf_node = new MORRFNode( start );
@@ -110,8 +122,16 @@ void MORRF::init(POS2D start, POS2D goal) {
         _references.push_back( p_ref_tree );
     }
 
+    std::vector< std::vector<float> > weights4create;
+    if(_enable_init_weight_ws_transform) {
+        weights4create = _ws_weights;
+    }
+    else {
+        weights4create = _weights;
+    }
+
     for( unsigned int m=0; m<_subproblem_num; m++ ) {
-        SubproblemTree * p_sub_tree = new SubproblemTree( this, _objective_num, _weights[m], m+_objective_num );
+        SubproblemTree * p_sub_tree = new SubproblemTree( this, _objective_num, weights4create[m], m+_objective_num );
         RRTNode * p_root_node = p_sub_tree->init( start, goal );
         p_root_node->m_added = true;
         root.mp_morrf_node->m_nodes[_objective_num+m] = p_root_node;
@@ -876,4 +896,40 @@ std::vector< float > MORRF::ws_transform( std::vector< float >& weight ) {
     new_weight[i] = inv_weight[i]/weight_sum;
   }
   return new_weight;
+}
+
+void MORRF::record() {
+    for(vector<ReferenceTree*>::iterator it=_references.begin();it!=_references.end();it++) {
+        ReferenceTree* p_ref_tree = (*it);
+        if(p_ref_tree) {
+            p_ref_tree->record();
+        }
+    }
+    for(vector<SubproblemTree*>::iterator it=_subproblems.begin();it!=_subproblems.end();it++) {
+        SubproblemTree* p_sub_tree = (*it);
+        if(p_sub_tree) {
+            p_sub_tree->record();
+        }
+    }
+
+}
+
+void MORRF::write_hist_cost(std::string filename) {
+    ofstream hist_cost_file;
+    hist_cost_file.open(filename.c_str());
+
+    for(unsigned int k=0;k<_objective_num;k++) {
+        ReferenceTree* p_ref_tree = _references[k];
+        if(p_ref_tree) {
+            p_ref_tree->write_hist_data(hist_cost_file);
+        }
+    }
+    std::vector<double> subprob_fitness(_subproblems.size(), 0.0);
+    for(unsigned int m=0;m<_subproblems.size();m++) {
+        SubproblemTree* p_sub_tree = _subproblems[m];
+        if(p_sub_tree) {
+            p_sub_tree->write_hist_data(hist_cost_file);
+        }
+    }
+    hist_cost_file.close();
 }

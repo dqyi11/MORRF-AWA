@@ -1,4 +1,3 @@
-#include "mainwindow.h"
 #include <QFileDialog>
 #include <configobjdialog.h>
 #include <QMessageBox>
@@ -6,6 +5,7 @@
 #include <QKeyEvent>
 #include <QStatusBar>
 #include <QApplication>
+#include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
@@ -45,6 +45,8 @@ void MainWindow::createMenuBar() {
     mpFileMenu->addAction(mpOpenAction);
     mpFileMenu->addAction(mpSaveAction);
     mpFileMenu->addAction(mpExportAction);
+    mpFileMenu->addAction(mpDumpWeightAction);
+    mpFileMenu->addAction(mpSaveLogFileAction);
 
     mpEditMenu = menuBar()->addMenu("&Edit");
     mpEditMenu->addAction(mpLoadMapAction);
@@ -66,7 +68,9 @@ void MainWindow::createActions() {
     mpLoadMapAction = new QAction("Load Map", this);
     mpLoadObjAction = new QAction("Load Objectives", this);
     mpRunAction = new QAction("Run", this);
+    mpDumpWeightAction = new QAction("Dump Weights", this);
     mpResetAction = new QAction("Reset", this);
+    mpSaveLogFileAction = new QAction("Save Log File", this);
 
     connect(mpOpenAction, SIGNAL(triggered()), this, SLOT(onOpen()));
     connect(mpSaveAction, SIGNAL(triggered()), this, SLOT(onSave()));
@@ -74,7 +78,9 @@ void MainWindow::createActions() {
     connect(mpLoadMapAction, SIGNAL(triggered()), this, SLOT(onLoadMap()));
     connect(mpLoadObjAction, SIGNAL(triggered()), this, SLOT(onLoadObj()));
     connect(mpRunAction, SIGNAL(triggered()), this, SLOT(onRun()));
+    connect(mpDumpWeightAction, SIGNAL(triggered()), this, SLOT(onDumpWeight()));
     connect(mpResetAction, SIGNAL(triggered()), this, SLOT(onReset()));
+    connect(mpSaveLogFileAction, SIGNAL(triggered()), this, SLOT(onSaveLogFile()));
 
     mpAddStartAction = new QAction("Add Start", this);
     mpAddGoalAction = new QAction("Add Goal", this);
@@ -309,9 +315,11 @@ void MainWindow::initMORRF() {
     POS2D start(mpViz->mMOPPInfo.mStart.x(), mpViz->mMOPPInfo.mStart.y());
     POS2D goal(mpViz->mMOPPInfo.mGoal.x(), mpViz->mMOPPInfo.mGoal.y());
 
-    mpMORRF->init(start, goal);
+    std::vector< std::vector<float> > weights = mpViz->mMOPPInfo.loadWeightFromFile( mpViz->mMOPPInfo.mWeightFile );
+    mpMORRF->init(start, goal, weights);
     mpMORRF->load_map(mpViz->mMOPPInfo.mppObstacle);
     mpViz->setMORRF(mpMORRF);
+
 }
 
 bool MainWindow::loadConfiguration(QString filename) {
@@ -328,6 +336,16 @@ bool MainWindow::saveConfiguration(QString filename) {
     return false;
 }
 
+void MainWindow::onDumpWeight() {
+    QString pathFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Txt Files (*.txt)"));
+    //mpMORRF->dump_map_info("map.txt");
+    if(pathFilename!="") {
+        if(mpMORRF) {
+            mpMORRF->dump_weights(pathFilename.toStdString());
+        }
+    }
+}
+
 void MainWindow::onReset() {
     if(mpMORRF) {
         delete mpMORRF;
@@ -339,4 +357,14 @@ void MainWindow::onReset() {
     }
     updateStatus();
     repaint();
+}
+
+void MainWindow::onSaveLogFile() {
+    QString pathFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Txt Files (*.txt)"));
+    //mpMORRF->dump_map_info("map.txt");
+    if(pathFilename!="") {
+        if(mpMORRF) {
+            mpMORRF->write_hist_cost(pathFilename.toStdString());
+        }
+    }
 }
