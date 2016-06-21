@@ -10,6 +10,7 @@
 #define DEFAULT_SEGMENT_LENGTH    5.0
 #define DEFAULT_MAX_ITERATION_NUM 1000
 #define DEAFULT_SUBPROBLEM_NUM    30
+#define DEFAULT_SPARSITY_K        4
 
 MultiObjPathPlanningInfo::MultiObjPathPlanningInfo() {
     mInfoFilename = "";
@@ -38,6 +39,7 @@ MultiObjPathPlanningInfo::MultiObjPathPlanningInfo() {
     mppObstacle = NULL;
 
     mMethodType = MORRF::WEIGHTED_SUM;
+    mSparsityK = DEFAULT_SPARSITY_K;
 }
 
 bool MultiObjPathPlanningInfo::initObstacleInfo() {
@@ -162,6 +164,7 @@ void MultiObjPathPlanningInfo::read(const QJsonObject &json) {
 
     mLoadWeightFile = json["loadWeightFile"].toBool();
     mWeightFile = json["weightFile"].toString();
+    mSparsityK = json["sparsityK"].toInt();
     mInitWeightWSTransform = json["initWeightWSTransform"].toBool();
 }
 
@@ -194,6 +197,7 @@ void MultiObjPathPlanningInfo::write(QJsonObject &json) const {
 
     json["loadWeightFile"] = mLoadWeightFile;
     json["weightFile"] = mWeightFile;
+    json["sparsityK"] = mSparsityK;
     json["initWeightWSTransform"] = mInitWeightWSTransform;
 }
 

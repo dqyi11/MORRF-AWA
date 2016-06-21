@@ -337,6 +337,7 @@ void MORRF::extend() {
         }
 
         // update current best and calculate sparsity level
+        update_current_best();
         update_sparsity_level();
         std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare);
 
@@ -345,6 +346,7 @@ void MORRF::extend() {
     if(_current_iteration % 10 == 0) {
         optimize();
     }
+    record();
     _current_iteration++;
 }
 
@@ -353,14 +355,12 @@ void MORRF::update_sparsity_level() {
     float objs[ (_objective_num+_subproblem_num) * _objective_num ];
     //memset(objs, 0, (_objective_num+_subproblem_num) * _objective_num);
     for( unsigned int k=0; k<_objective_num; k++ ) {
-        _references[k]->update_current_best();
         for( unsigned int i=0; i<_objective_num; i++) {
             objs[k*_objective_num+i] =  _references[k]->m_current_best_cost[i];
         }
     }
 
     for( unsigned int m=0; m<_subproblem_num; m++ ) {
-        _subproblems[m]->update_current_best();
         for( unsigned int i=0; i<_objective_num; i++) {
             objs[_objective_num*_objective_num+m*_objective_num+i] = _subproblems[m]->m_current_best_cost[i];
         }
@@ -478,6 +478,24 @@ double MORRF::calc_fitness( vector<double>& cost, vector<double>& weight, POS2D&
     return fitness;
 }
 
+double MORRF::calc_fitness( std::vector<double>& cost, std::vector<double>& weight, std::vector<double>& utopia ) {
+    double fitness = 0.0;
+
+    if( _type==MORRF::WEIGHTED_SUM ) {
+        fitness = calc_fitness_by_weighted_sum( cost, weight );
+    }
+    else if( _type==MORRF::TCHEBYCHEFF ) {
+        fitness = calc_fitness_by_tchebycheff( cost, weight, utopia );
+    }
+    else {
+        fitness = calc_fitness_by_boundary_intersection( cost, weight, utopia );
+    }
+    /*
+    if(fitness < 0.0) {
+        std::cout << "Negative fitness " << fitness << std::endl;
+    } */
+    return fitness;
+}
 
 float MORRF::calc_fitness_by_weighted_sum( vector<double>& cost, vector<double>& weight ) {
     double fitness = 0.0;
@@ -755,6 +773,28 @@ bool MORRF::is_ref_tree_min_cost() {
         }
     }
     return true;
+}
+
+void MORRF::update_current_best() {
+    std::vector<double> utopia(_objective_num,0.0);
+    for( unsigned int k=0; k<_objective_num; k++ ) {
+        ReferenceTree* p_ref_tree = _references[k];
+        if(p_ref_tree) {
+            p_ref_tree->update_current_best();
+            utopia[k] = p_ref_tree->m_current_best_cost[k];
+            p_ref_tree->m_current_best_fitness = utopia[k];
+        }
+    }
+    for( unsigned int m=0; m<_subproblem_num; m++ ) {
+        SubproblemTree* p_sub_tree = _subproblems[m];
+        if(p_sub_tree) {
+            p_sub_tree->update_current_best();
+            p_sub_tree->m_current_best_fitness = calc_fitness(p_sub_tree->m_current_best_cost,
+                                                              p_sub_tree->m_weight,
+                                                              utopia);
+        }
+    }
+
 }
 
 void MORRF::construct( vector<MORRFNode*>& pos_seq, vector<SubproblemTree*>& new_subproblems ) {

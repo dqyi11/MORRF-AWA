@@ -39,6 +39,9 @@ private:
     QLabel      * mpLabelWeightFile;
     QLineEdit   * mpLineEditWeightFile;
     QPushButton * mpBtnOpenWeightFile;
+
+    QLabel    * mpLabelSparsityK;
+    QLineEdit * mpLineEditSparsityK;
     QCheckBox   * mpCheckEnableInitWeightWSTransform;
     QLabel      * mpLabelEnableInitWeightWSTransform;
 

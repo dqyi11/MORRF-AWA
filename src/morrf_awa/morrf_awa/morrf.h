@@ -61,6 +61,8 @@ public:
 
     std::vector<Path*> get_paths();
 
+    void update_current_best();
+
     int** get_map_info() { return _pp_map_info; }
 
     void dump_map_info( std::string filename );
@@ -87,6 +89,9 @@ public:
     void construct( std::vector<MORRFNode*>& pos_seq,  std::vector<SubproblemTree*>& new_subproblems );
 
     void optimize();
+
+    void set_sparsity_k(unsigned int k) { _sparsity_k = k; }
+    unsigned int get_sparsity_k() { return _sparsity_k; }
 
     void record();
     void write_hist_cost(std::string filename);
