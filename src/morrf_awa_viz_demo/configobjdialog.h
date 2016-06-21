@@ -35,10 +35,12 @@ private:
     QLabel    * mpLabelSegmentLength;
     QLineEdit * mpLineEditSegmentLength;
 
-    QCheckBox   * mpLoadWeightFromFile;
+    QCheckBox   * mpCheckLoadWeightFromFile;
     QLabel      * mpLabelWeightFile;
     QLineEdit   * mpLineEditWeightFile;
     QPushButton * mpBtnOpenWeightFile;
+    QCheckBox   * mpCheckEnableInitWeightWSTransform;
+    QLabel      * mpLabelEnableInitWeightWSTransform;
 
     QLabel    * mpLabelType;
     QComboBox * mpComboType;

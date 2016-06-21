@@ -135,6 +135,7 @@ public:
 
     bool mLoadWeightFile;
     QString mWeightFile;
+    bool mInitWeightWSTransform;
 
     std::vector<COST_FUNC_PTR> mFuncs;
     std::vector<int**>         mDistributions;

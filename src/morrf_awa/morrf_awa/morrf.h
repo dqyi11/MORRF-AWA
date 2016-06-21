@@ -91,6 +91,9 @@ public:
     void record();
     void write_hist_cost(std::string filename);
 
+    void set_init_weight_ws_transform(bool enable) { _enable_init_weight_ws_transform = enable; }
+    bool get_init_weight_ws_transform() { return _enable_init_weight_ws_transform; }
+
     std::vector< SubproblemTree* > add_subproblem_trees( unsigned int num );
     std::vector< std::vector< float > > create_weights(unsigned int num);
     std::vector< std::vector< float > > ws_transform( std::vector< std::vector< float > >& weights );

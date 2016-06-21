@@ -33,6 +33,7 @@ MultiObjPathPlanningInfo::MultiObjPathPlanningInfo() {
 
     mLoadWeightFile = false;
     mWeightFile = "";
+    mInitWeightWSTransform = false;
 
     mppObstacle = NULL;
 
@@ -161,6 +162,7 @@ void MultiObjPathPlanningInfo::read(const QJsonObject &json) {
 
     mLoadWeightFile = json["loadWeightFile"].toBool();
     mWeightFile = json["weightFile"].toString();
+    mInitWeightWSTransform = json["initWeightWSTransform"].toBool();
 }
 
 void MultiObjPathPlanningInfo::write(QJsonObject &json) const {
@@ -192,6 +194,7 @@ void MultiObjPathPlanningInfo::write(QJsonObject &json) const {
 
     json["loadWeightFile"] = mLoadWeightFile;
     json["weightFile"] = mWeightFile;
+    json["initWeightWSTransform"] = mInitWeightWSTransform;
 }
 
 bool MultiObjPathPlanningInfo::saveToFile( QString filename ) {

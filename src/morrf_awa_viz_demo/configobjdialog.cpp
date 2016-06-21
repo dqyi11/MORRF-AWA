@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
-#define WEIGHTED_SUM_STR           "Weighted-sum"
+#define WEIGHTED_SUM_STR          "Weighted-sum"
 #define TCHEBYCHEFF_STR           "Tchebycheff"
 #define BOUNDARY_INTERSECTION_STR "Boundary-intersection"
 
@@ -34,21 +34,29 @@ ConfigObjDialog::ConfigObjDialog(MainWindow * parent) {
     mpLineEditSegmentLength->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mSegmentLength));
     mpLineEditSegmentLength->setMaximumWidth(40);
 
-    mpLoadWeightFromFile = new QCheckBox();
+    mpCheckLoadWeightFromFile = new QCheckBox();
     mpLabelWeightFile = new QLabel("Weight File: ");
     mpLineEditWeightFile = new QLineEdit();
     mpBtnOpenWeightFile = new QPushButton("Load");
     if( mpParentWindow->mpViz->mMOPPInfo.mLoadWeightFile == false ) {
-        mpLoadWeightFromFile->setChecked(false);
+        mpCheckLoadWeightFromFile->setChecked(false);
         mpLineEditWeightFile->setReadOnly(true);
         mpBtnOpenWeightFile->setEnabled(false);
     }
     else {
-        mpLoadWeightFromFile->setChecked(true);
+        mpCheckLoadWeightFromFile->setChecked(true);
         mpLineEditWeightFile->setReadOnly(false);
         mpBtnOpenWeightFile->setEnabled(true);
     }
-    connect(mpLoadWeightFromFile, SIGNAL(clicked(bool)), this, SLOT(onLoadWeightToggled(bool)));
+    mpCheckEnableInitWeightWSTransform = new QCheckBox();
+    if(mpParentWindow->mpViz->mMOPPInfo.mInitWeightWSTransform==true) {
+        mpCheckEnableInitWeightWSTransform->setChecked(true);
+    }
+    else {
+        mpCheckEnableInitWeightWSTransform->setChecked(false);
+    }
+    mpLabelEnableInitWeightWSTransform = new QLabel("Init Weights WS Transform");
+    connect(mpCheckLoadWeightFromFile, SIGNAL(clicked(bool)), this, SLOT(onLoadWeightToggled(bool)));
     connect(mpBtnOpenWeightFile, SIGNAL(clicked()), this, SLOT(onBtnOpenWeightFileClicked()));
 
     QHBoxLayout * minDistLayout = new QHBoxLayout();
@@ -62,10 +70,12 @@ ConfigObjDialog::ConfigObjDialog(MainWindow * parent) {
     minDistLayout->addWidget(mpLineEditSegmentLength);
 
     QHBoxLayout * weightFileLayout = new QHBoxLayout();
-    weightFileLayout->addWidget(mpLoadWeightFromFile);
+    weightFileLayout->addWidget(mpCheckLoadWeightFromFile);
     weightFileLayout->addWidget(mpLabelWeightFile);
     weightFileLayout->addWidget(mpLineEditWeightFile);
     weightFileLayout->addWidget(mpBtnOpenWeightFile);
+    weightFileLayout->addWidget(mpLabelEnableInitWeightWSTransform);
+    weightFileLayout->addWidget(mpCheckEnableInitWeightWSTransform);
 
     QHBoxLayout * typeLayout = new QHBoxLayout();
     mpLabelType = new QLabel("Type: ");
@@ -167,17 +177,23 @@ void ConfigObjDialog::updateDisplay() {
             mpComboType->setCurrentIndex((int)mpParentWindow->mpViz->mMOPPInfo.mMethodType);
 
             if(mpParentWindow->mpViz->mMOPPInfo.mLoadWeightFile==true) {
-                mpLoadWeightFromFile->setChecked(true);
+                mpCheckLoadWeightFromFile->setChecked(true);
                 mpLineEditWeightFile->setReadOnly(false);
                 mpBtnOpenWeightFile->setEnabled(true);
             }
             else {
-                mpLoadWeightFromFile->setChecked(false);
+                mpCheckLoadWeightFromFile->setChecked(false);
                 mpLineEditWeightFile->setReadOnly(true);
                 mpBtnOpenWeightFile->setEnabled(false);
             }
             mpLineEditWeightFile->setText(mpParentWindow->mpViz->mMOPPInfo.mWeightFile);
 
+            if(mpParentWindow->mpViz->mMOPPInfo.mInitWeightWSTransform==true) {
+                mpCheckEnableInitWeightWSTransform->setChecked(true);
+            }
+            else {
+                mpCheckEnableInitWeightWSTransform->setChecked(false);
+            }
         }
     }
 
@@ -210,13 +226,20 @@ void ConfigObjDialog::updateConfiguration() {
     int type = mpComboType->currentIndex();
     mpParentWindow->mpViz->mMOPPInfo.mMethodType = (MORRF::MORRF_TYPE) type;
 
-    if(mpLoadWeightFromFile->isChecked()) {
+    if(mpCheckLoadWeightFromFile->isChecked()) {
         mpParentWindow->mpViz->mMOPPInfo.mLoadWeightFile = true;
         mpParentWindow->mpViz->mMOPPInfo.mWeightFile = mpLineEditWeightFile->text();
     }
     else {
         mpParentWindow->mpViz->mMOPPInfo.mLoadWeightFile = false;
         mpParentWindow->mpViz->mMOPPInfo.mWeightFile = "";
+    }
+
+    if(mpCheckEnableInitWeightWSTransform->isChecked()) {
+        mpParentWindow->mpViz->mMOPPInfo.mInitWeightWSTransform = true;
+    }
+    else {
+        mpParentWindow->mpViz->mMOPPInfo.mInitWeightWSTransform = false;
     }
 
 }
