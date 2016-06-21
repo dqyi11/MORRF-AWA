@@ -57,7 +57,11 @@ void MORRF::_init_weights() {
     _deinit_weights();
     _weights.clear();
 
-    _weights = create_weights( _subproblem_num );
+
+    std::vector< std::vector<float> > weights = create_weights( _subproblem_num );
+    save_weights( weights, "./before_weights.txt");
+    _weights = ws_transform( weights );
+    save_weights( _weights, "./after_weights.txt");
 }
 
 void MORRF::_deinit_weights() {
@@ -92,7 +96,7 @@ void MORRF::init(POS2D start, POS2D goal) {
 
     _init_weights();
 
-    KDNode2D root(start);    
+    KDNode2D root(start);
     root.mp_morrf_node = new MORRFNode( start );
     root.mp_morrf_node->m_nodes = std::vector<RRTNode*>(_objective_num+_subproblem_num, NULL);
 
@@ -550,17 +554,22 @@ void MORRF::dump_map_info( std::string filename ) {
 }
 
 void MORRF::dump_weights( std::string filename ) {
-    ofstream weight_file;
-    weight_file.open(filename.c_str());
+  save_weights(_weights, filename);
+}
 
-    for( unsigned int i=0; i<_subproblem_num; i++ ) {
-        for( unsigned int j=0; j<_objective_num; j++ ) {
-            weight_file << _weights[i][j] << " ";
-        }
-        weight_file << std::endl;
-    }
+void MORRF::save_weights( std::vector< std::vector<float> >& weights, std::string filename ) {
+  ofstream weight_file;
+  weight_file.open(filename.c_str());
 
-    weight_file.close();
+  for( unsigned int i=0; i<weights.size(); i++ ) {
+      std::vector<float> w = weights[i];
+      for( unsigned int j=0; j<w.size(); j++ ) {
+          weight_file << w[j] << " ";
+      }
+      weight_file << std::endl;
+  }
+
+  weight_file.close();
 }
 
 bool MORRF::are_reference_structures_correct() {
@@ -697,7 +706,7 @@ bool MORRF::update_path_cost( Path *p ) {
             for(unsigned int k=0;k<_objective_num;k++) {
                 p->m_cost[k] += delta_cost[k];
             }
-        }        
+        }
         return true;
     }
     return false;
@@ -842,4 +851,29 @@ std::vector< SubproblemTree* > MORRF::add_subproblem_trees( unsigned int num ) {
     construct( seq,  trees );
 
     return trees;
+}
+
+std::vector< std::vector< float > > MORRF::ws_transform( std::vector< std::vector< float > >& weights ) {
+  std::vector< std::vector< float > > new_weights;
+  for(std::vector< std::vector< float> >::iterator it = weights.begin();
+      it != weights.end(); it++) {
+    std::vector< float > w = (*it);
+    std::vector< float > new_w = ws_transform( w );
+    new_weights.push_back( new_w );
+  }
+  return new_weights;
+}
+
+std::vector< float > MORRF::ws_transform( std::vector< float >& weight ) {
+  std::vector< float > inv_weight(weight.size(), 0.0);
+  std::vector< float > new_weight(weight.size(), 0.0);
+  double weight_sum = 0.0;
+  for(unsigned int i=0; i<weight.size(); i++) {
+    inv_weight[i] = 1.0/weight[i];
+    weight_sum += inv_weight[i];
+  }
+  for(unsigned int i=0; i<inv_weight.size(); i++) {
+    new_weight[i] = inv_weight[i]/weight_sum;
+  }
+  return new_weight;
 }

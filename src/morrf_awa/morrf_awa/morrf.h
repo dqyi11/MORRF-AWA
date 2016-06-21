@@ -64,6 +64,7 @@ public:
 
     void dump_map_info( std::string filename );
     void dump_weights( std::string filename );
+    void save_weights( std::vector< std::vector<float> >& weights, std::string filename );
 
     void dump_subproblem_sparsity( std::string filename );
 
@@ -88,6 +89,8 @@ public:
 
     std::vector< SubproblemTree* > add_subproblem_trees( unsigned int num );
     std::vector< std::vector< float > > create_weights(unsigned int num);
+    std::vector< std::vector< float > > ws_transform( std::vector< std::vector< float > >& weights );
+    std::vector< float > ws_transform( std::vector< float >& weight );
 protected:
     void _init_weights();
     void _deinit_weights();
