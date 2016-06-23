@@ -61,7 +61,7 @@ public:
 
     std::vector<Path*> get_paths();
 
-    void update_current_best();
+    bool update_current_best();
 
     int** get_map_info() { return _pp_map_info; }
 
@@ -87,6 +87,7 @@ public:
     bool update_path_cost( Path *p );
 
     void construct( std::vector<MORRFNode*>& pos_seq,  std::vector<SubproblemTree*>& new_subproblems );
+    void construct( std::vector<MORRFNode*>& pos_seq,  SubproblemTree* p_new_sub_tree );
 
     void optimize();
 
@@ -108,6 +109,8 @@ protected:
     void _deinit_weights();
 
     void update_sparsity_level();
+    ReferenceTree* create_reference_tree( unsigned int k );
+    SubproblemTree* create_subproblem_tree( std::vector<float>& weight, unsigned int index );
 
 private:
     int ** _pp_map_info;
@@ -121,6 +124,8 @@ private:
 
     KDTree2D * _p_kd_tree;
 
+    KDNode2D _root;
+
     std::vector<COST_FUNC_PTR> _funcs;
     std::vector<int**> _fitness_distributions;
 
@@ -129,8 +134,6 @@ private:
 
     std::vector<SubproblemTree*> _subproblems;
     std::vector<ReferenceTree*> _references;
-
-    std::vector<SubproblemTree*> _external_archive;
 
     std::vector<POS2D> _sampled_positions;
 
@@ -149,6 +152,8 @@ private:
     int _current_iteration;
 
     unsigned int _sparsity_k;
+    int _solution_available_iteration;
+    std::vector<double> _solution_utopia;
 };
 
 #endif // MORRF_H

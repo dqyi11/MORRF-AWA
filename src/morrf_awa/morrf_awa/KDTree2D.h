@@ -53,7 +53,7 @@ public:
 
 class KDNode2D : public POS2D {
 public:
-    KDNode2D( value_type x, value_type y ) : POS2D( x, y ) {
+    KDNode2D( value_type x = -1, value_type y = -1 ) : POS2D( x, y ) {
         mp_morrf_node = NULL;
     }
 

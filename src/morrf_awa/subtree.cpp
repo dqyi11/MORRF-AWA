@@ -45,7 +45,7 @@ RRTree::RRTree( MORRF* parent, unsigned int objective_num, std::vector<float>  w
     m_current_best_cost = std::vector<double>(m_objective_num, 0.0);
     m_current_best_fitness = std::numeric_limits<float>::max();
     m_first_path_iteration = 0;
-    m_sparsity_level = 0.0;
+    m_sparsity_level = std::numeric_limits<float>::max();
 }
 
 RRTNode* RRTree::init( POS2D start, POS2D goal ) {
@@ -194,23 +194,24 @@ RRTNode* RRTree::find_ancestor( RRTNode* p_node ) {
     return get_ancestor( p_node );
 }
 
-Path* RRTree::find_path() {
+Path* RRTree::find_path(RRTNode * p_closest_node) {
     Path* p_new_path = new Path( m_start, m_goal, m_objective_num );
 
     list<RRTNode*> node_list;
 
-    RRTNode * p_first_node = NULL;
-    vector<double> delta_cost = vector<double>(m_objective_num, 0.0);
-    double delta_fitness = 0.0;
-    p_first_node = get_closet_to_goal( delta_cost, delta_fitness );
+    if(p_closest_node==NULL) {
+        vector<double> delta_cost = vector<double>(m_objective_num, 0.0);
+        double delta_fitness = 0.0;
+        p_closest_node = get_closet_to_goal( delta_cost, delta_fitness );
+    }
 
-    if( p_first_node!=NULL ) {
+    if( p_closest_node!=NULL ) {
 
         if( mp_parent ) {
-            if( mp_parent->_is_obstacle_free(m_goal, p_first_node->m_pos) == false ) {
+            if( mp_parent->_is_obstacle_free(m_goal, p_closest_node->m_pos) == false ) {
                 return NULL;
             }
-            get_parent_node_list( p_first_node, node_list );
+            get_parent_node_list( p_closest_node, node_list );
 
             for( list<RRTNode*>::reverse_iterator rit=node_list.rbegin();
                 rit!=node_list.rend(); ++rit ) {
@@ -260,9 +261,9 @@ bool RRTree::are_all_nodes_fitness_positive() {
     return true;
 }
 
-bool RRTree::update_current_best() {
+bool RRTree::update_current_best(RRTNode* p_closet_node) {
 
-    mp_current_best = find_path();
+    mp_current_best = find_path(p_closet_node);
     if( mp_current_best ) {
         for(unsigned int k=0;k<m_objective_num;k++) {
             m_current_best_cost[k] = mp_current_best->m_cost[k];
@@ -416,8 +417,8 @@ RRTNode * ReferenceTree::get_closet_to_goal( vector<double>& delta_cost, double&
     return p_closest_node;
 }
 
-Path* ReferenceTree::find_path() {
-    Path* p_new_path = RRTree::find_path();
+Path* ReferenceTree::find_path(RRTNode* p_closet_node) {
+    Path* p_new_path = RRTree::find_path(p_closet_node);
     if( p_new_path ) {
         if( mp_parent ) {
             mp_parent->update_path_cost( p_new_path );
@@ -426,8 +427,8 @@ Path* ReferenceTree::find_path() {
     return p_new_path;
 }
 
-bool ReferenceTree::update_current_best() {
-    mp_current_best = find_path();
+bool ReferenceTree::update_current_best(RRTNode* p_closet_node) {
+    mp_current_best = find_path(p_closet_node);
     if( mp_current_best ) {
         for(unsigned int k=0;k<m_objective_num;k++) {
             m_current_best_cost[k] = mp_current_best->m_cost[k];
