@@ -55,8 +55,9 @@ RRTNode* RRTree::init( POS2D start, POS2D goal ) {
     }
     m_start = start;
     m_goal = goal;
-    mp_root = new RRTNode( start, m_objective_num );
-    m_nodes.push_back(mp_root);
+    mp_root = create_new_node( start );
+    mp_root->m_added = true;
+    m_added_nodes.push_back(mp_root);
 
     return mp_root;
 }
@@ -477,6 +478,7 @@ void SubproblemTree::attach_new_node( RRTNode* p_node_new, list<RRTNode*> near_n
     bool added = add_edge( p_min_node, p_node_new );
     if( added ) {
         p_node_new->m_added = true;
+        m_added_nodes.push_back(p_node_new);
         p_node_new->m_fitness = min_new_node_fitness;
         for( unsigned int k = 0; k < m_objective_num; k++ ) {
            p_node_new->m_cost[k] = min_new_node_cost[k];

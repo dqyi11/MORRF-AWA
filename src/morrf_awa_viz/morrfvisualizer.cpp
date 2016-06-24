@@ -59,7 +59,7 @@ void MORRFVisualizer::paintEvent(QPaintEvent * e) {
 
             for(std::list<RRTNode*>::iterator it= pTree->m_nodes.begin(); it!=pTree->m_nodes.end();it++) {
                 RRTNode* pNode = (*it);
-                if( pNode ) {
+                if( pNode && pNode->m_added ) {
                     for( std::list<RRTNode*>::iterator itc= pNode->m_child_nodes.begin(); itc!=pNode->m_child_nodes.end(); itc++ ) {
                         RRTNode* pChildNode = (*itc);
                         if( pChildNode ) {

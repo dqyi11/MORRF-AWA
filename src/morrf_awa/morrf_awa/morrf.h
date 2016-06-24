@@ -90,6 +90,7 @@ public:
     void construct( std::vector<MORRFNode*>& pos_seq,  SubproblemTree* p_new_sub_tree );
 
     void optimize();
+    void update_ball_radius();
 
     void set_sparsity_k(unsigned int k) { _sparsity_k = k; }
     unsigned int get_sparsity_k() { return _sparsity_k; }
@@ -111,6 +112,7 @@ protected:
     void update_sparsity_level();
     ReferenceTree* create_reference_tree( unsigned int k );
     SubproblemTree* create_subproblem_tree( std::vector<float>& weight, unsigned int index );
+    SubproblemTree* create_subproblem_tree( std::vector<float>& weight, unsigned int index, std::vector<MORRFNode*>& pos_seq );
 
 private:
     int ** _pp_map_info;

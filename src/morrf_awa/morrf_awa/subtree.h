@@ -86,6 +86,7 @@ public:
 
     std::vector<double> m_weight;
     std::list<RRTNode*> m_nodes;
+    std::list<RRTNode*> m_added_nodes;
 
     float m_sparsity_level;
 
