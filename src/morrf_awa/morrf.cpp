@@ -372,7 +372,7 @@ void MORRF::extend() {
     // update current best
     update_current_best();
 
-    if( _solution_available_iteration > 0 ) {
+    if( _solution_available_iteration >= 0 ) {
 
         // calculate sparsity level
         update_sparsity_level();
