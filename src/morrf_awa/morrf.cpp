@@ -313,6 +313,19 @@ void MORRF::extend() {
             _p_kd_tree->insert( new_node );
             node_inserted = true;
 
+            // repair subproblem trees
+            for( unsigned int m=0; m<_subproblem_num; m++ ) {
+                SubproblemTree* p_sub_tree = _subproblems[m];
+                if(p_sub_tree) {
+                    unsigned int mth_tree_size = p_sub_tree->m_nodes.size();
+                    if(mth_tree_size<_morrf_nodes.size()) {
+                        std::cout << "REPAIR TREE " << p_sub_tree->m_index << std::endl;
+                        std::vector<MORRFNode*> pos_seq(_morrf_nodes.begin()+mth_tree_size,_morrf_nodes.begin()+_morrf_nodes.size());
+                        construct( pos_seq, p_sub_tree );
+                    }
+                }
+            }
+
             // attach new node to reference trees
             // rewire near nodes of reference trees
             for ( unsigned int k=0; k<_objective_num; k++ ) {
@@ -368,14 +381,17 @@ void MORRF::extend() {
         std::vector<SubproblemTree*>::iterator max_it = std::max_element(_subproblems.begin(), _subproblems.end(), sparisity_compare_ascending);
         SubproblemTree* p_max_tree = (*max_it);
         if(p_max_tree) {
+
             std::vector<float> solution_mapping_vec(_objective_num, 0.0);
             for(unsigned int k=0;k<_objective_num;k++) {
                 solution_mapping_vec[k] = p_max_tree->m_current_best_cost[k] - _solution_utopia[k];
             }
             std::vector<float> new_weight = ws_transform(solution_mapping_vec);
             SubproblemTree* p_new_sub_tree = create_subproblem_tree( new_weight, _subproblems.size()+_objective_num);
-            std::vector<MORRFNode*> pos_seq(_morrf_nodes.begin(),_morrf_nodes.begin()+_morrf_nodes.size());
+            std::vector<MORRFNode*> pos_seq(_morrf_nodes.begin()+1,_morrf_nodes.begin()+_morrf_nodes.size());
             construct( pos_seq, p_new_sub_tree );
+
+            std::cout << "create new tree " << std::endl;
         }
 
         std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare_descending);
