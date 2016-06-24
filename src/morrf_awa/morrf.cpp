@@ -388,7 +388,7 @@ void MORRF::extend() {
             }
             std::vector<float> new_weight = ws_transform(solution_mapping_vec);
             SubproblemTree* p_new_sub_tree = create_subproblem_tree( new_weight, _subproblems.size()+_objective_num);
-            std::vector<MORRFNode*> pos_seq(_morrf_nodes.begin()+1,_morrf_nodes.begin()+_morrf_nodes.size());
+            std::vector<MORRFNode*> pos_seq(_morrf_nodes.begin()+p_new_sub_tree->m_nodes.size(),_morrf_nodes.begin()+_morrf_nodes.size());
             construct( pos_seq, p_new_sub_tree );
 
             std::cout << "create new tree " << std::endl;
