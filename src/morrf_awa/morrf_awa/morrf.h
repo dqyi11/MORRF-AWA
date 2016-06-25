@@ -83,6 +83,8 @@ public:
     bool are_all_subproblem_nodes_fitness_positive();
     bool is_node_number_identical();
     bool is_ref_tree_min_cost();
+    bool is_morrf_node_child_size_correct();
+
     double get_ball_radius() { return _ball_radius; }
     bool update_path_cost( Path *p );
 

@@ -65,7 +65,6 @@ RRTNode* RRTree::init( POS2D start, POS2D goal ) {
 RRTNode*  RRTree::create_new_node( POS2D pos ) {
     RRTNode * pNode = new RRTNode( pos, m_objective_num );
     m_nodes.push_back(pNode);
-
     return pNode;
 }
 
@@ -187,6 +186,14 @@ bool RRTree::is_structure_correct() {
                 }
             }
         }
+    }
+    return true;
+}
+
+bool RRTree::is_added_nodes_size_correct() {
+    unsigned int added_node_size = m_added_nodes.size();
+    if(added_node_size!=mp_parent->get_current_iteration()+1) {
+        return false;
     }
     return true;
 }
@@ -331,6 +338,7 @@ void ReferenceTree::attach_new_node( RRTNode* p_node_new, std::list<RRTNode*> ne
     bool added = add_edge(p_min_node, p_node_new);
     if(added) {
         p_node_new->m_added = true;
+        m_added_nodes.push_back(p_node_new);
         p_node_new->m_fitness = min_new_node_fitness;
         p_node_new->m_cost[m_index] = p_node_new->m_fitness;
     }

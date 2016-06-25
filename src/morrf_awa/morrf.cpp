@@ -137,6 +137,18 @@ void MORRF::init(POS2D start, POS2D goal, std::vector< std::vector<float> > weig
     _p_kd_tree->insert( _root );
     _morrf_nodes.push_back(_root.mp_morrf_node);
     _current_iteration = 0;
+
+    /*
+    for(unsigned int k=0;k<_objective_num;k++) {
+        if(false==_references[k]->is_added_nodes_size_correct()) {
+            std::cout << "ref tree " << k << " node size incorrect " << _references[k]->m_added_nodes.size() <<  std::endl;
+        }
+    }
+    for(unsigned int m=0;m<_subproblem_num;m++) {
+        if(false==_subproblems[m]->is_added_nodes_size_correct()) {
+            std::cout << "sub tree " << m << " node size incorrect " << _subproblems[m]->m_added_nodes.size() <<  std::endl;
+        }
+    }*/
 }
 
 ReferenceTree* MORRF::create_reference_tree( unsigned int k ) {
@@ -144,20 +156,16 @@ ReferenceTree* MORRF::create_reference_tree( unsigned int k ) {
     weight[k] = 1.0;
     ReferenceTree * p_ref_tree = new ReferenceTree( this, _objective_num, weight, k );
     RRTNode * p_root_node = p_ref_tree->init( m_start, m_goal );
-    p_root_node->m_added = true;
     _root.mp_morrf_node->m_nodes[k] = p_root_node;
     _references.push_back( p_ref_tree );
-
     return p_ref_tree;
 }
 
 SubproblemTree* MORRF::create_subproblem_tree( std::vector<float>& weight, unsigned int index ) {
     SubproblemTree * p_sub_tree = new SubproblemTree( this, _objective_num, weight, index );
     RRTNode * p_root_node = p_sub_tree->init( m_start, m_goal );
-    p_root_node->m_added = true;
     _root.mp_morrf_node->m_nodes[index] = p_root_node;
     _subproblems.push_back( p_sub_tree );
-
     return p_sub_tree;
 }
 
@@ -419,6 +427,22 @@ void MORRF::extend() {
     record();
     update_ball_radius();
     _current_iteration++;
+
+    std::cout << "sub prob num " << _subproblems.size() << std::endl;
+    /*
+    if(false == is_morrf_node_child_size_correct()) {
+        std::cout << "morrf node size wrong" << std::endl;
+    }
+    for(unsigned int k=0;k<_objective_num;k++) {
+        if(false==_references[k]->is_added_nodes_size_correct()) {
+            std::cout << "ref tree " << k << " node size incorrect " << _references[k]->m_added_nodes.size() <<  std::endl;
+        }
+    }
+    for(unsigned int m=0;m<_subproblem_num;m++) {
+        if(false==_subproblems[m]->is_added_nodes_size_correct()) {
+            std::cout << "sub tree " << m << " node size incorrect " << _subproblems[m]->m_added_nodes.size() <<  std::endl;
+        }
+    }*/
 }
 
 void MORRF::update_sparsity_level() {
@@ -790,15 +814,12 @@ vector<Path*> MORRF::get_paths() {
             }
         }
     }
-    for(vector<SubproblemTree*>::iterator it=_subproblems.begin();it!=_subproblems.end();it++) {
-        SubproblemTree* p_sub_tree = (*it);
-        if(p_sub_tree) {
-            Path* pSubPath = p_sub_tree->mp_current_best;
-            if(pSubPath) {
-              paths.push_back(pSubPath);
-            }
+    for(unsigned int m=0;m<_subproblems.size();m++) {
+        if(_subproblems[m]->mp_current_best) {
+            paths.push_back(_subproblems[m]->mp_current_best);
         }
     }
+
     return paths;
 }
 
@@ -842,6 +863,17 @@ bool MORRF::is_ref_tree_min_cost() {
                     return false;
                 }
             }
+        }
+    }
+    return true;
+}
+
+bool MORRF::is_morrf_node_child_size_correct() {
+    for(std::vector<MORRFNode*>::iterator it=_morrf_nodes.begin();
+        it!=_morrf_nodes.end();it++) {
+        unsigned int morrf_node_size = _morrf_nodes.size();
+        if(morrf_node_size != _current_iteration+1) {
+            return false;
         }
     }
     return true;

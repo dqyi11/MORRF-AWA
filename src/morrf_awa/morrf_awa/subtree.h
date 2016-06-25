@@ -63,6 +63,9 @@ public:
     bool is_structure_correct();
     bool are_all_nodes_tractable();
     bool are_all_nodes_fitness_positive();
+    bool is_added_nodes_size_correct();
+
+
     RRTNode* find_ancestor( RRTNode* p_node );
     unsigned int get_current_iteration() { return m_nodes.size(); }
 
