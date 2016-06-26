@@ -4,7 +4,20 @@
 
 int main(int argc, char *argv[]) {
 
+    std::vector<int> arr (9);
+    arr = {1,2,3,4,5,6,7,8,9};
 
+    std::vector<int>::const_iterator begin = arr.begin();
+    std::vector<int>::const_iterator last = arr.begin() + arr.size();
+    std::vector<int> new_arr(begin, last);
+    std::cout << "Size: "<< new_arr.size() << std::endl;
+
+    for (int i = 0 ;  i < new_arr.size(); i++){
+        std::cout << new_arr[i] << std::endl;
+    }
+    return 0;
+
+    /*
     float p0[2] = {5.0, 4.0};
     flann::Matrix<float> vec0(p0, 1, 2);
     flann::Index<flann::L2<float> > index(vec0, flann::KDTreeIndexParams(4));
@@ -51,4 +64,5 @@ int main(int argc, char *argv[]) {
     }
 
     return 0;
+    */
 }

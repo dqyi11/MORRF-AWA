@@ -170,7 +170,10 @@ SubproblemTree* MORRF::create_subproblem_tree( std::vector<float>& weight, unsig
 }
 
 SubproblemTree* MORRF::create_subproblem_tree( std::vector<float>& weight, unsigned int index, std::vector<MORRFNode*>& pos_seq ) {
-    SubproblemTree * p_sub_tree = create_subproblem_tree(weight, index);
+    SubproblemTree * p_sub_tree = new SubproblemTree( this, _objective_num, weight, index );
+    RRTNode * p_root_node = p_sub_tree->init( m_start, m_goal );
+    _root.mp_morrf_node->m_nodes.push_back(p_root_node);
+    _subproblems.push_back( p_sub_tree );
 
     for(unsigned int i=0; i<pos_seq.size();i++) {
         MORRFNode* p_morrf_node = pos_seq[i];
@@ -415,10 +418,9 @@ void MORRF::extend() {
             std::vector<MORRFNode*> pos_seq(_morrf_nodes.begin()+1,_morrf_nodes.begin()+_morrf_nodes.size());
             SubproblemTree* p_new_sub_tree = create_subproblem_tree( new_weight, _subproblems.size()+_objective_num, pos_seq );
             construct( pos_seq, p_new_sub_tree );
-
         }
 
-        std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare_descending);
+        //std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare_descending);
     }
 
     if(_current_iteration % 10 == 0) {
@@ -428,7 +430,7 @@ void MORRF::extend() {
     update_ball_radius();
     _current_iteration++;
 
-    std::cout << "sub prob num " << _subproblems.size() << std::endl;
+    //std::cout << "sub prob num " << _subproblems.size() << std::endl;
     /*
     if(false == is_morrf_node_child_size_correct()) {
         std::cout << "morrf node size wrong" << std::endl;
@@ -814,7 +816,7 @@ vector<Path*> MORRF::get_paths() {
             }
         }
     }
-    for(unsigned int m=0;m<_subproblems.size();m++) {
+    for(unsigned int m=0;m<_subproblem_num;m++) {
         if(_subproblems[m]->mp_current_best) {
             paths.push_back(_subproblems[m]->mp_current_best);
         }
@@ -951,23 +953,27 @@ void MORRF::construct( vector<MORRFNode*>& pos_seq, vector<SubproblemTree*>& new
                             near_sub_nodes.push_back( p_sub_node );
                         }
                     }
-                    if( kd_node[0] != p_sub_node->m_pos[0] && kd_node[1] != p_sub_node->m_pos[1] ) {
+                    if( kd_node[0] != p_sub_node->m_pos[0] || kd_node[1] != p_sub_node->m_pos[1] ) {
                         std::cout << "not match " << kd_node << " and " << p_sub_node->m_pos << std::endl;
                     }
                 }
 
                 p_sub_tree->attach_new_node( p_current_sub_node,  near_sub_nodes );
                 p_sub_tree->rewire_near_nodes( p_current_sub_node, near_sub_nodes );
+
+                p_sub_tree->update_current_best();
+                p_sub_tree->record();
             }
         }
     }
 
+    /*
     for(unsigned int m=0; m<new_subproblems.size();m++) {
         SubproblemTree* p_sub_tree = new_subproblems[m];
         if(p_sub_tree) {
             p_sub_tree->update_current_best();
         }
-    }
+    }*/
 }
 
 void MORRF::construct( std::vector<MORRFNode*>& pos_seq,  SubproblemTree* p_new_sub_tree ) {
@@ -1012,8 +1018,14 @@ void MORRF::dump_subproblem_sparsity( std::string filename ) {
     ofstream sparsity_file;
     sparsity_file.open(filename.c_str());
 
-    for( unsigned int i=0; i<_subproblem_num; i++ ) {
-        for( unsigned int j=0; j<_objective_num; j++ ) {
+    for( unsigned int i=0; i<_subproblems.size(); i++ ) {
+        sparsity_file << _subproblems[i]->m_index << " ";
+    }
+    sparsity_file << std::endl;
+    sparsity_file << std::endl;
+
+    for( unsigned int j=0; j<_subproblems.size(); j++ ) {
+        for( unsigned int i=0; i<_subproblem_num; i++ ) {
             sparsity_file << _subproblems[i]->m_current_best_cost[j] << " ";
         }
         sparsity_file << std::endl;
@@ -1021,7 +1033,7 @@ void MORRF::dump_subproblem_sparsity( std::string filename ) {
 
     sparsity_file << std::endl;
 
-    for( unsigned int i=0; i<_subproblem_num; i++ ) {
+    for( unsigned int i=0; i<_subproblems.size(); i++ ) {
         sparsity_file << _subproblems[i]->m_sparsity_level << std::endl;
     }
 

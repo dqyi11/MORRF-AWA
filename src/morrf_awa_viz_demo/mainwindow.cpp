@@ -202,7 +202,7 @@ void MainWindow::onRun() {
     repaint();
     */
 
-    //mpMORRF->dump_subproblem_sparsity("sparsity.txt");
+    mpMORRF->dump_subproblem_sparsity("sparsity.txt");
 
 }
 
