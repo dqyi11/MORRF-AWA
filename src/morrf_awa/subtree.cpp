@@ -27,6 +27,19 @@ Path::Path( POS2D start, POS2D goal, int objectiveNum ) {
     m_weight = vector<double>(m_objective_num, 0.0);
     m_fitness = 0.0;
     m_tree_idx = -1;
+    m_dominated = false;
+}
+
+bool Path::is_dominated_by(Path* p_other_path) {
+    if(p_other_path) {
+        for(unsigned int k=0;k<m_objective_num;k++) {
+            if(m_cost[k] < p_other_path->m_cost[k]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 RRTree::RRTree( MORRF* parent, unsigned int objective_num, std::vector<float>  weight, unsigned int index ) {

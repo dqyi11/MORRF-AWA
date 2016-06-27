@@ -201,15 +201,9 @@ void MainWindow::onRun() {
         repaint();
     }
 
-    /*
-    mpMORRF->add_subproblem_trees(20);
-    mpViz->mMOPPInfo.mSubproblemNum += 20;
-    updateStatus();
-    repaint();
-    */
-
+    mpMORRF->sort_subproblem_trees();
     mpMORRF->dump_subproblem_sparsity("sparsity.txt");
-
+    repaint();
 }
 
 void MainWindow::onAddStart() {

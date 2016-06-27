@@ -321,7 +321,7 @@ void MORRF::extend() {
                 construct( pos_seq, p_new_sub_tree );
             }
 
-            std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare_descending);
+            sort_subproblem_trees();
         }
     }
 
@@ -434,7 +434,6 @@ void MORRF::extend() {
     update_ball_radius();
     _current_iteration++;
 
-    //std::cout << "sub prob num " << _subproblems.size() << std::endl;
     /*
     if(false == is_morrf_node_child_size_correct()) {
         std::cout << "morrf node size wrong" << std::endl;
@@ -453,7 +452,8 @@ void MORRF::extend() {
 
 void MORRF::update_sparsity_level() {
 
-    float objs[ (_objective_num+_subproblem_num) * _objective_num ];
+    unsigned int subproblem_num = _subproblems.size();
+    float objs[ (_objective_num+subproblem_num) * _objective_num ];
     //memset(objs, 0, (_objective_num+_subproblem_num) * _objective_num);
     for( unsigned int k=0; k<_objective_num; k++ ) {
         for( unsigned int i=0; i<_objective_num; i++) {
@@ -461,20 +461,20 @@ void MORRF::update_sparsity_level() {
         }
     }
 
-    for( unsigned int m=0; m<_subproblem_num; m++ ) {
+    for( unsigned int m=0; m<subproblem_num; m++ ) {
         for( unsigned int i=0; i<_objective_num; i++) {
             objs[_objective_num*_objective_num+m*_objective_num+i] = _subproblems[m]->m_current_best_cost[i];
         }
     }
 
-    flann::Matrix<float> obj_vec(objs, _objective_num+_subproblem_num, _objective_num);
+    flann::Matrix<float> obj_vec(objs, _objective_num+subproblem_num, _objective_num);
     ObjectiveKNN knn( _sparsity_k, obj_vec );
     std::vector<float> res = knn.get_sparse_diversity(obj_vec);
 
     for( unsigned int k=0; k<_objective_num; k++ ) {
         _references[k]->m_sparsity_level = res[k];
     }
-    for( unsigned int m=0; m<_subproblem_num; m++ ) {
+    for( unsigned int m=0; m<subproblem_num; m++ ) {
         _subproblems[m]->m_sparsity_level = res[m+_objective_num];
     }
 }
@@ -825,7 +825,7 @@ vector<Path*> MORRF::get_paths() {
             paths.push_back(_subproblems[m]->mp_current_best);
         }
     }
-
+    update_dominance(paths);
     return paths;
 }
 
@@ -1142,4 +1142,27 @@ void MORRF::write_hist_cost(std::string filename) {
         }
     }
     hist_cost_file.close();
+}
+
+void MORRF::update_dominance( std::vector<Path*>& paths ) {
+
+    for(std::vector<Path*>::iterator it=paths.begin();
+        it!=paths.end();it++) {
+        Path* p_path = (*it);
+        p_path->m_dominated = false;
+        for(std::vector<Path*>::iterator itc=paths.begin();
+            itc!=paths.end();itc++) {
+            Path* p_other_path = (*itc);
+            if(p_path != p_other_path) {
+                if(p_path->is_dominated_by(p_other_path)) {
+                    p_path->m_dominated = true;
+                    break;
+                }
+            }
+        }        
+    }
+}
+
+void MORRF::sort_subproblem_trees() {
+    std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare_descending);
 }

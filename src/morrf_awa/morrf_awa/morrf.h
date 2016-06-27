@@ -58,10 +58,12 @@ public:
 
     ReferenceTree* get_reference_tree( unsigned int k );
     SubproblemTree* get_subproblem_tree( unsigned int m );
+    unsigned int get_subproblem_tree_num() { return _subproblems.size(); }
 
     std::vector<Path*> get_paths();
 
     bool update_current_best();
+    void update_dominance( std::vector<Path*>& paths );
 
     int** get_map_info() { return _pp_map_info; }
 
@@ -107,6 +109,8 @@ public:
     std::vector< std::vector< float > > create_weights(unsigned int num);
     std::vector< std::vector< float > > ws_transform( std::vector< std::vector< float > >& weights );
     std::vector< float > ws_transform( std::vector< float >& weight );
+
+    void sort_subproblem_trees();
 protected:
     void _init_weights( std::vector< std::vector<float> >& weights );
     void _deinit_weights();

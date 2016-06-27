@@ -17,14 +17,16 @@ void MORRFVisualizer::prevTree() {
             mCurrentTreeIdx --;
         }
         else {
-            mCurrentTreeIdx = mMOPPInfo.mSubproblemNum+mMOPPInfo.mObjectiveNum-1;
+            //mCurrentTreeIdx = mMOPPInfo.mSubproblemNum+mMOPPInfo.mObjectiveNum-1;
+            mCurrentTreeIdx = mpMORRF->get_subproblem_tree_num()+mMOPPInfo.mObjectiveNum-1;
         }
     }
 }
 
 void MORRFVisualizer::nextTree() {
     if(mpMORRF) {
-        if( mCurrentTreeIdx < mMOPPInfo.mSubproblemNum+mMOPPInfo.mObjectiveNum-1 ) {
+        if( mCurrentTreeIdx < mpMORRF->get_subproblem_tree_num()+mMOPPInfo.mObjectiveNum-1 ) {
+        //if( mCurrentTreeIdx < mMOPPInfo.mSubproblemNum+mMOPPInfo.mObjectiveNum-1 ) {
             mCurrentTreeIdx ++;
         }
         else {

@@ -139,7 +139,7 @@ void MultiObjPathPlanningInfo::initFuncsParams() {
 }
 
 void MultiObjPathPlanningInfo::read(const QJsonObject &json) {
-    mInfoFilename;
+
     mMapFilename = json["mapFilename"].toString();
     mMapFullpath = json["mapFullpath"].toString();
     mMapWidth = json["mapWidth"].toInt();
@@ -253,9 +253,16 @@ void MultiObjPathPlanningInfo::exportPaths( QString filename ) {
             for(unsigned int k=0;k<mObjectiveNum;k++) {
                 stream << p->m_cost[k] << "\t";
             }
+            if(p->m_dominated) {
+                stream << 1;
+            }
+            else {
+                stream << 0;
+            }
             stream << "\n";
         }
         stream << "\n";
+
         // Save paths
         for( std::vector<Path*>::iterator it=mFoundPaths.begin(); it!=mFoundPaths.end(); it++ ) {
             Path* p = *it;
