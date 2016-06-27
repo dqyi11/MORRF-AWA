@@ -820,12 +820,31 @@ vector<Path*> MORRF::get_paths() {
             }
         }
     }
+    /*
     for(unsigned int m=0;m<_subproblem_num;m++) {
         if(_subproblems[m]->mp_current_best) {
             paths.push_back(_subproblems[m]->mp_current_best);
         }
     }
     update_dominance(paths);
+    */
+    vector<Path*> paths_from_subproblem_trees;
+    for(unsigned int m=0;m<_subproblems.size();m++) {
+        if(_subproblems[m]->mp_current_best) {
+            paths_from_subproblem_trees.push_back(_subproblems[m]->mp_current_best);
+        }
+    }
+    update_dominance(paths_from_subproblem_trees);
+    unsigned int tree_idx = 0;
+    while(paths.size()<_objective_num+_subproblem_num && tree_idx < _subproblems.size()) {
+        Path* p_curr_path = _subproblems[tree_idx]->mp_current_best;
+        if(p_curr_path) {
+            if(p_curr_path->m_dominated==false) {
+                paths.push_back(p_curr_path);
+            }
+        }
+        tree_idx++;
+    }
     return paths;
 }
 
