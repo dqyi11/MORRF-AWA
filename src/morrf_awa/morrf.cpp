@@ -34,6 +34,7 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
     _segment_length = segmentLength;
 
     _theta = 4;
+    _new_tree_creation_step = 20;
     _sparsity_k = 4; //_subproblem_num * 0.8;
 
     _pp_map_info = new int*[_sampling_width];
@@ -297,28 +298,31 @@ void MORRF::extend() {
 
     bool node_inserted = false;
 
-    if( _solution_available_iteration >= 0 && _current_iteration > 10 ) {
+    if( _solution_available_iteration >= 0 ) {
 
         // calculate sparsity level
         update_sparsity_level();
 
-        // find the max sparsity level
-        std::vector<SubproblemTree*>::iterator max_it = std::max_element(_subproblems.begin(), _subproblems.end(), sparisity_compare_ascending);
-        SubproblemTree* p_max_tree = (*max_it);
-        if(p_max_tree) {
+        if(_current_iteration > 0 && _current_iteration % _new_tree_creation_step == 0 ) {
 
-            std::vector<float> solution_mapping_vec(_objective_num, 0.0);
-            for(unsigned int k=0;k<_objective_num;k++) {
-                solution_mapping_vec[k] = p_max_tree->m_current_best_cost[k] - _solution_utopia[k];
+            // find the max sparsity level
+            std::vector<SubproblemTree*>::iterator max_it = std::max_element(_subproblems.begin(), _subproblems.end(), sparisity_compare_ascending);
+            SubproblemTree* p_max_tree = (*max_it);
+            if(p_max_tree) {
+
+                std::vector<float> solution_mapping_vec(_objective_num, 0.0);
+                for(unsigned int k=0;k<_objective_num;k++) {
+                    solution_mapping_vec[k] = p_max_tree->m_current_best_cost[k] - _solution_utopia[k];
+                }
+                std::vector<float> new_weight = ws_transform(solution_mapping_vec);
+
+                std::vector<MORRFNode*> pos_seq(_morrf_nodes.begin()+1,_morrf_nodes.begin()+_morrf_nodes.size());
+                SubproblemTree* p_new_sub_tree = create_subproblem_tree( new_weight, _subproblems.size()+_objective_num, pos_seq );
+                construct( pos_seq, p_new_sub_tree );
             }
-            std::vector<float> new_weight = ws_transform(solution_mapping_vec);
 
-            std::vector<MORRFNode*> pos_seq(_morrf_nodes.begin()+1,_morrf_nodes.begin()+_morrf_nodes.size());
-            SubproblemTree* p_new_sub_tree = create_subproblem_tree( new_weight, _subproblems.size()+_objective_num, pos_seq );
-            construct( pos_seq, p_new_sub_tree );
+            std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare_descending);
         }
-
-        std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare_descending);
     }
 
     while( false == node_inserted ) {
@@ -422,8 +426,6 @@ void MORRF::extend() {
 
     // update current best
     update_current_best();
-
-
 
     if(_current_iteration % 10 == 0) {
         optimize();

@@ -7,10 +7,11 @@
 #include <list>
 #include "morrf_awa_viz/multiobjpathplanninginfo.h"
 
-#define DEFAULT_SEGMENT_LENGTH    5.0
-#define DEFAULT_MAX_ITERATION_NUM 1000
-#define DEAFULT_SUBPROBLEM_NUM    30
-#define DEFAULT_SPARSITY_K        4
+#define DEFAULT_SEGMENT_LENGTH         5.0
+#define DEFAULT_MAX_ITERATION_NUM      1000
+#define DEFAULT_SUBPROBLEM_NUM         30
+#define DEFAULT_SPARSITY_K             4
+#define DEFAULT_NEW_TREE_CREATION_STEP 20
 
 MultiObjPathPlanningInfo::MultiObjPathPlanningInfo() {
     mInfoFilename = "";
@@ -25,7 +26,7 @@ MultiObjPathPlanningInfo::MultiObjPathPlanningInfo() {
 
     mMinDistEnabled = false;
 
-    mSubproblemNum = DEAFULT_SUBPROBLEM_NUM;
+    mSubproblemNum = DEFAULT_SUBPROBLEM_NUM;
     mMaxIterationNum = DEFAULT_MAX_ITERATION_NUM;
     mSegmentLength = DEFAULT_SEGMENT_LENGTH;
 
@@ -40,6 +41,7 @@ MultiObjPathPlanningInfo::MultiObjPathPlanningInfo() {
 
     mMethodType = MORRF::WEIGHTED_SUM;
     mSparsityK = DEFAULT_SPARSITY_K;
+    mNewTreeCreationStep = DEFAULT_NEW_TREE_CREATION_STEP;
 }
 
 bool MultiObjPathPlanningInfo::initObstacleInfo() {
@@ -166,6 +168,7 @@ void MultiObjPathPlanningInfo::read(const QJsonObject &json) {
     mWeightFile = json["weightFile"].toString();
     mSparsityK = json["sparsityK"].toInt();
     mInitWeightWSTransform = json["initWeightWSTransform"].toBool();
+    mNewTreeCreationStep = json["newTreeCreationStep"].toInt();
 }
 
 void MultiObjPathPlanningInfo::write(QJsonObject &json) const {
@@ -199,6 +202,7 @@ void MultiObjPathPlanningInfo::write(QJsonObject &json) const {
     json["weightFile"] = mWeightFile;
     json["sparsityK"] = mSparsityK;
     json["initWeightWSTransform"] = mInitWeightWSTransform;
+    json["newTreeCreationStep"] = mNewTreeCreationStep;
 }
 
 bool MultiObjPathPlanningInfo::saveToFile( QString filename ) {

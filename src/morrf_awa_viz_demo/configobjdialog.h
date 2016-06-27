@@ -40,10 +40,12 @@ private:
     QLineEdit   * mpLineEditWeightFile;
     QPushButton * mpBtnOpenWeightFile;
 
-    QLabel    * mpLabelSparsityK;
-    QLineEdit * mpLineEditSparsityK;
+    QLabel      * mpLabelSparsityK;
+    QLineEdit   * mpLineEditSparsityK;
     QCheckBox   * mpCheckEnableInitWeightWSTransform;
     QLabel      * mpLabelEnableInitWeightWSTransform;
+    QLabel      * mpLabelNewTreeCreationStep;
+    QLineEdit   * mpLineEditNewTreeCreationStep;
 
     QLabel    * mpLabelType;
     QComboBox * mpComboType;

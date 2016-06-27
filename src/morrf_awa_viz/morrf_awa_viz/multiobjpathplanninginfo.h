@@ -147,6 +147,7 @@ public:
     double mSegmentLength;
 
     int mSparsityK;
+    int mNewTreeCreationStep;
 
     MORRF::MORRF_TYPE mMethodType;
 

@@ -59,6 +59,7 @@ ConfigObjDialog::ConfigObjDialog(MainWindow * parent) {
     connect(mpCheckLoadWeightFromFile, SIGNAL(clicked(bool)), this, SLOT(onLoadWeightToggled(bool)));
     connect(mpBtnOpenWeightFile, SIGNAL(clicked()), this, SLOT(onBtnOpenWeightFileClicked()));
 
+
     QHBoxLayout * minDistLayout = new QHBoxLayout();
     minDistLayout->addWidget(mpCheckMinDist);
     minDistLayout->addWidget(mpLabelMinDist);
@@ -75,12 +76,16 @@ ConfigObjDialog::ConfigObjDialog(MainWindow * parent) {
     weightFileLayout->addWidget(mpLineEditWeightFile);
     weightFileLayout->addWidget(mpBtnOpenWeightFile);
 
-    mpLabelSparsityK = new QLabel("Sparsity K:");
+    mpLabelSparsityK = new QLabel(" Sparsity K: ");
     mpLineEditSparsityK = new QLineEdit();
     mpLineEditSparsityK->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mSparsityK));
     mpLineEditSparsityK->setMaximumWidth(40);
+    mpLabelNewTreeCreationStep = new QLabel(" New Tree Creation Step: ");
+    mpLineEditNewTreeCreationStep = new QLineEdit();
+    mpLineEditNewTreeCreationStep->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mNewTreeCreationStep));
+    mpLineEditNewTreeCreationStep->setMaximumWidth(40);
 
-    mpLabelType = new QLabel("Type: ");
+    mpLabelType = new QLabel(" Type: ");
     mpComboType = new QComboBox();
     mpComboType->addItem(WEIGHTED_SUM_STR);
     mpComboType->addItem(TCHEBYCHEFF_STR);
@@ -92,6 +97,8 @@ ConfigObjDialog::ConfigObjDialog(MainWindow * parent) {
     typeLayout->addWidget(mpLabelEnableInitWeightWSTransform);
     typeLayout->addWidget(mpLabelSparsityK);
     typeLayout->addWidget(mpLineEditSparsityK);
+    typeLayout->addWidget(mpLabelNewTreeCreationStep);
+    typeLayout->addWidget(mpLineEditNewTreeCreationStep);
     typeLayout->addWidget(mpLabelType);
     typeLayout->addWidget(mpComboType);
 
@@ -182,6 +189,7 @@ void ConfigObjDialog::updateDisplay() {
             }
 
             mpLineEditSparsityK->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mSparsityK));
+            mpLineEditNewTreeCreationStep->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mNewTreeCreationStep));
             mpComboType->setCurrentIndex((int)mpParentWindow->mpViz->mMOPPInfo.mMethodType);
 
             if(mpParentWindow->mpViz->mMOPPInfo.mLoadWeightFile==true) {
@@ -204,7 +212,6 @@ void ConfigObjDialog::updateDisplay() {
             }
         }
     }
-
 }
 
 void ConfigObjDialog::updateConfiguration() {
@@ -231,6 +238,7 @@ void ConfigObjDialog::updateConfiguration() {
     mpParentWindow->mpViz->mMOPPInfo.mSubproblemNum = mpLineEditSubProb->text().toInt();
     mpParentWindow->mpViz->mMOPPInfo.mSegmentLength = mpLineEditSegmentLength->text().toDouble();
     mpParentWindow->mpViz->mMOPPInfo.mSparsityK = mpLineEditSparsityK->text().toInt();
+    mpParentWindow->mpViz->mMOPPInfo.mNewTreeCreationStep = mpLineEditNewTreeCreationStep->text().toInt();
 
     int type = mpComboType->currentIndex();
     mpParentWindow->mpViz->mMOPPInfo.mMethodType = (MORRF::MORRF_TYPE) type;

@@ -154,6 +154,7 @@ private:
 
     double _theta;
     int _current_iteration;
+    int _new_tree_creation_step;
 
     unsigned int _sparsity_k;
     int _solution_available_iteration;

@@ -39,6 +39,7 @@ public:
     POS2D m_start;
     POS2D m_goal;
     std::vector<POS2D> m_waypoints;
+    int m_tree_idx;
 };
 
 class RRTree {
