@@ -14,7 +14,7 @@ bool sparisity_compare_ascending(SubproblemTree* const & a, SubproblemTree* cons
 }
 
 bool sparisity_compare_descending(SubproblemTree* const & a, SubproblemTree* const & b) {
-    return a->m_sparsity_level < b->m_sparsity_level;
+    return a->m_sparsity_level > b->m_sparsity_level;
 }
 
 MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num, unsigned int subproblem_num, unsigned int segmentLength, MORRF_TYPE type) {
@@ -1034,7 +1034,7 @@ void MORRF::dump_subproblem_sparsity( std::string filename ) {
     sparsity_file << std::endl;
 
     for( unsigned int i=0; i<_subproblems.size(); i++ ) {
-        sparsity_file << _subproblems[i]->m_sparsity_level << std::endl;
+        sparsity_file << _subproblems[i]->m_sparsity_level << " ";
     }
 
     sparsity_file.close();
