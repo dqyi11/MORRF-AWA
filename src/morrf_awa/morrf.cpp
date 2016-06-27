@@ -420,7 +420,7 @@ void MORRF::extend() {
             construct( pos_seq, p_new_sub_tree );
         }
 
-        //std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare_descending);
+        std::sort(_subproblems.begin(), _subproblems.end(), sparisity_compare_descending);
     }
 
     if(_current_iteration % 10 == 0) {
