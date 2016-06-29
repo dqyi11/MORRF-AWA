@@ -253,11 +253,16 @@ void MultiObjPathPlanningInfo::exportPaths( QString filename ) {
             for(unsigned int k=0;k<mObjectiveNum;k++) {
                 stream << p->m_cost[k] << "\t";
             }
-            if(p->m_dominated) {
-                stream << 1;
-            }
-            else {
-                stream << 0;
+            stream << (int)p->m_dominated << "\t";
+            stream << p->m_sparsity_level;
+            stream << "\n";
+        }
+        stream << "\n";
+        
+        for( std::vector<Path*>::iterator it=mFoundPaths.begin(); it!=mFoundPaths.end(); it++ ) {
+            Path* p = *it;
+            for(unsigned int k=0;k<mObjectiveNum;k++) {
+                stream << p->m_weight[k] << "\t";
             }
             stream << "\n";
         }

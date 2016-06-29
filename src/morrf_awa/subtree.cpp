@@ -29,6 +29,7 @@ Path::Path( POS2D start, POS2D goal, int objectiveNum ) {
     m_fitness = 0.0;
     m_tree_idx = -1;
     m_dominated = false;
+    m_sparsity_level = 0.0;
 }
 
 bool Path::is_dominated_by(Path* p_other_path) {
@@ -112,8 +113,9 @@ bool RRTree::has_edge( RRTNode* p_node_p, RRTNode* p_node_c ) {
         }
     }
     /*
-    if ( p_node_p == p_node_c->mp_parent)
+    if ( p_node_p == p_node_c->mp_parent) {
         return true;
+    }
     */
     return false;
 }
@@ -332,7 +334,6 @@ void RRTree::write_hist_data( std::ostream& out ) {
     out << std::endl;
 
 }
-
 
 ReferenceTree::ReferenceTree( MORRF* parent, unsigned int objective_num, std::vector<float> weight, unsigned int index )
     : RRTree( parent, objective_num, weight, index ) {

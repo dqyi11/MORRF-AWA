@@ -116,6 +116,7 @@ protected:
     void _deinit_weights();
 
     void update_sparsity_level();
+    void update_sparsity_level( std::vector<Path*>& paths );
     ReferenceTree* create_reference_tree( unsigned int k );
     SubproblemTree* create_subproblem_tree( std::vector<float>& weight, unsigned int index );
     SubproblemTree* create_subproblem_tree( std::vector<float>& weight, unsigned int index, std::vector<MORRFNode*>& pos_seq );

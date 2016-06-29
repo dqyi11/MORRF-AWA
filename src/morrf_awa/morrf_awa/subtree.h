@@ -43,6 +43,7 @@ public:
     std::vector<POS2D> m_waypoints;
     int m_tree_idx;
     bool m_dominated;
+    float m_sparsity_level;
 };
 
 class RRTree {
