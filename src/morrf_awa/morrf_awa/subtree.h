@@ -13,7 +13,7 @@ class MORRF;
 
 class RRTNode {
 public:
-    RRTNode( POS2D pos, int objective_num );
+    RRTNode( POS2D pos, int objective_num, int tree_idx );
 
     bool operator==( const RRTNode &other );
 
@@ -24,6 +24,7 @@ public:
     RRTNode * mp_parent;
     MORRFNode* mp_host_node;
 
+    int m_index;
     bool m_added;
     std::list<RRTNode*> m_child_nodes;
 };

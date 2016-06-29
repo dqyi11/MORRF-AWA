@@ -4,9 +4,10 @@
 
 using namespace std;
 
-RRTNode::RRTNode( POS2D pos, int objective_num ) {
+RRTNode::RRTNode( POS2D pos, int objective_num, int tree_idx ) {
     m_pos = pos;
     m_objective_num = objective_num;
+    m_index = tree_idx;
 
     m_cost = vector<double>(m_objective_num, 0.0);
     m_fitness = 0.0;
@@ -77,7 +78,7 @@ RRTNode* RRTree::init( POS2D start, POS2D goal ) {
 }
 
 RRTNode*  RRTree::create_new_node( POS2D pos ) {
-    RRTNode * pNode = new RRTNode( pos, m_objective_num );
+    RRTNode * pNode = new RRTNode( pos, m_objective_num, m_index );
     m_nodes.push_back(pNode);
     return pNode;
 }
@@ -291,6 +292,7 @@ bool RRTree::update_current_best(RRTNode* p_closet_node) {
         for(unsigned int k=0;k<m_objective_num;k++) {
             m_current_best_cost[k] = mp_current_best->m_cost[k];
         }
+        m_current_best_fitness = mp_current_best->m_fitness;
         return true;
     }
     return false;
@@ -463,6 +465,7 @@ bool ReferenceTree::update_current_best(RRTNode* p_closet_node) {
         for(unsigned int k=0;k<m_objective_num;k++) {
             m_current_best_cost[k] = mp_current_best->m_cost[k];
         }
+        m_current_best_fitness = mp_current_best->m_fitness;
         return true;
     }
     return false;
@@ -485,6 +488,9 @@ void SubproblemTree::attach_new_node( RRTNode* p_node_new, list<RRTNode*> near_n
 
         if(p_near_node->m_pos == p_node_new->m_pos){
             continue;
+        }
+        if(p_near_node->m_index != p_node_new->m_index) {
+            std::cout << "BIG ERROR : INDEX NOT MATCH" << std::endl;
         }
         if ( true == mp_parent->_is_obstacle_free(p_near_node->m_pos, p_node_new->m_pos) ) {
             vector<double> cost_temp(m_objective_num, 0.0);
