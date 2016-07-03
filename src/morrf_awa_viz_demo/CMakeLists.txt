@@ -1,12 +1,15 @@
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+generate_ggo(morrf_awa_viz_demo.ggo morrf_awa_viz_demo_cmdline)
+
 add_executable(morrf-awa-viz-demo
                configobjdialog.h
                configobjdialog.cpp
                mainwindow.h
                mainwindow.cpp
-               main.cpp
+               morrf_awa_viz_demo.cpp
+               ${CMAKE_CURRENT_BINARY_DIR}/morrf_awa_viz_demo_cmdline.c
                )
 
 include_directories(

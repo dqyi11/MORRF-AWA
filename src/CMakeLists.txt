@@ -16,6 +16,22 @@ if( NOT Qt5Widgets_FOUND )
   return()
 endif()
 
+# search for the getgetopt program, exit if not found
+find_program(GENGETOPT gengetopt)
+if( NOT GENGETOPT )
+  message( FATAL_ERROR "gengetopt not found\n" )
+  return()
+endif()
+
+macro(generate_ggo input output)
+  add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${output}.c ${CMAKE_CURRENT_BINARY_DIR}/${output}.h
+    COMMAND ${GENGETOPT} -i ${CMAKE_CURRENT_SOURCE_DIR}/${input} --file-name ${output} --output-dir=${CMAKE_CURRENT_BINARY_DIR} --unamed-opts
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${input}
+  )
+  include_directories (${CMAKE_CURRENT_BINARY_DIR})
+endmacro(generate_ggo)
+
 # Find package FLANN
 find_package(PkgConfig)
 pkg_check_modules(PC_FLANN flann)

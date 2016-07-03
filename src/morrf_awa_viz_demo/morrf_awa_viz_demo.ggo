@@ -1,0 +1,11 @@
+package "morrf_awa_viz_demo"
+version "0.0.1"
+purpose "MORRF*-AWA"
+
+option "no_gui" - "no gui" int default="0" optional
+option "config" - "config file" string optional
+option "paths" - "grammar file" string optional
+option "log" - "command string" string optional
+
+
+text ""
