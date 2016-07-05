@@ -222,6 +222,9 @@ RRTNode* RRTree::find_ancestor( RRTNode* p_node ) {
 Path* RRTree::find_path(RRTNode * p_closest_node) {
     Path* p_new_path = new Path( m_start, m_goal, m_objective_num );
     p_new_path->m_tree_idx = m_index;
+    for(unsigned int i=0;i<m_objective_num;i++) {
+        p_new_path->m_weight[i] = m_weight[i];
+    }
 
     list<RRTNode*> node_list;
 

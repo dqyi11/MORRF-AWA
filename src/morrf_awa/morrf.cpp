@@ -860,9 +860,9 @@ vector<Path*> MORRF::get_paths() {
     while(paths.size()<_objective_num+_subproblem_num && tree_idx < _subproblems.size()) {
         Path* p_curr_path = _subproblems[tree_idx]->mp_current_best;
         if(p_curr_path) {
-            if(p_curr_path->m_dominated==false) {
+            //if(p_curr_path->m_dominated==false) {
                 paths.push_back(p_curr_path);
-            }
+            //}
         }
         tree_idx++;
     }
