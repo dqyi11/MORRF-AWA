@@ -78,9 +78,11 @@ void MORRF::_init_weights( std::vector< std::vector<float> >& weights ) {
     }
 
     if(_enable_init_weight_ws_transform) {
+        std::cout << "saving weights before WS transformation" << std::endl;
         save_weights( _weights, "./before_weights.txt");
         _ws_weights = ws_transform( _weights );
-        save_weights( _weights, "./after_weights.txt");
+        std::cout << "saving weights after WS transformation" << std::endl;
+        save_weights( _ws_weights, "./after_weights.txt");
     }
 }
 
@@ -937,7 +939,7 @@ bool MORRF::update_current_best() {
         _solution_available_iteration = _current_iteration;
     }
 
-    for( unsigned int k=0; k<_objective_num; k++ ) {        
+    for( unsigned int k=0; k<_objective_num; k++ ) {
         ReferenceTree* p_ref_tree = _references[k];
         if(p_ref_tree) {
             unsigned int index = p_ref_tree->m_index;
@@ -1201,7 +1203,7 @@ void MORRF::update_dominance( std::vector<Path*>& paths ) {
                     break;
                 }
             }
-        }        
+        }
     }
 }
 

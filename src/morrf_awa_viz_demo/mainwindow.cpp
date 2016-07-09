@@ -339,6 +339,7 @@ void MainWindow::initMORRF() {
     POS2D goal(mpViz->mMOPPInfo.mGoal.x(), mpViz->mMOPPInfo.mGoal.y());
 
     mpMORRF->set_sparsity_k(mpViz->mMOPPInfo.mSparsityK);
+    mpMORRF->set_init_weight_ws_transform(mpViz->mMOPPInfo.mInitWeightWSTransform);
     std::vector< std::vector<float> > weights;
     if(mpViz->mMOPPInfo.mLoadWeightFile == true) {
         weights = mpViz->mMOPPInfo.loadWeightFromFile( mpViz->mMOPPInfo.mWeightFile );
