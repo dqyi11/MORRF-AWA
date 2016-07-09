@@ -42,6 +42,8 @@ private:
 
     QLabel      * mpLabelSparsityK;
     QLineEdit   * mpLineEditSparsityK;
+    QLabel      * mpLabelBIPenalty;
+    QLineEdit   * mpLineEditBIPenalty;
     QCheckBox   * mpCheckEnableInitWeightWSTransform;
     QLabel      * mpLabelEnableInitWeightWSTransform;
     QLabel      * mpLabelNewTreeCreationStep;

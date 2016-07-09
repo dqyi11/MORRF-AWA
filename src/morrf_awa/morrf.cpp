@@ -6,6 +6,7 @@
 #include "morrf_awa/objective_knn.h"
 
 #define OBSTACLE_THRESHOLD 200
+#define DEFAULT_THETA      4.0;
 
 using namespace std;
 
@@ -33,7 +34,7 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
     _current_iteration = 0;
     _segment_length = segmentLength;
 
-    _theta = 4;
+    _theta = DEFAULT_THETA;;
     _new_tree_creation_step = 20;
     _sparsity_k = 4; //_subproblem_num * 0.8;
 

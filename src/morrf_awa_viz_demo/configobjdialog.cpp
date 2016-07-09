@@ -80,6 +80,12 @@ ConfigObjDialog::ConfigObjDialog(MainWindow * parent) {
     mpLineEditSparsityK = new QLineEdit();
     mpLineEditSparsityK->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mSparsityK));
     mpLineEditSparsityK->setMaximumWidth(40);
+
+    mpLabelBIPenalty = new QLabel("BI Penalty:");;
+    mpLineEditBIPenalty = new QLineEdit();
+    mpLineEditBIPenalty->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mBoundaryIntersectionPenalty));
+    mpLineEditBIPenalty->setMaximumWidth(40);
+
     mpLabelNewTreeCreationStep = new QLabel(" New Tree Creation Step: ");
     mpLineEditNewTreeCreationStep = new QLineEdit();
     mpLineEditNewTreeCreationStep->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mNewTreeCreationStep));
@@ -97,6 +103,8 @@ ConfigObjDialog::ConfigObjDialog(MainWindow * parent) {
     typeLayout->addWidget(mpLabelEnableInitWeightWSTransform);
     typeLayout->addWidget(mpLabelSparsityK);
     typeLayout->addWidget(mpLineEditSparsityK);
+    typeLayout->addWidget(mpLabelBIPenalty);
+    typeLayout->addWidget(mpLineEditBIPenalty);
     typeLayout->addWidget(mpLabelNewTreeCreationStep);
     typeLayout->addWidget(mpLineEditNewTreeCreationStep);
     typeLayout->addWidget(mpLabelType);
@@ -155,10 +163,15 @@ void ConfigObjDialog::onBtnAddClicked() {
            mpListWidget->addItem(objFilename);
            repaint();
        }
+       else {
+           QMessageBox msg;
+           msg.setText("Fitness distribution file is not compatible!");
+           msg.exec();
+       }
    }
    else {
        QMessageBox msg;
-       msg.setText("Fitness distribution file is not compatible!");
+       msg.setText("Fitness distribution file is null!");
        msg.exec();
    }
 }
@@ -189,6 +202,7 @@ void ConfigObjDialog::updateDisplay() {
             }
 
             mpLineEditSparsityK->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mSparsityK));
+            mpLineEditBIPenalty->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mBoundaryIntersectionPenalty));
             mpLineEditNewTreeCreationStep->setText(QString::number(mpParentWindow->mpViz->mMOPPInfo.mNewTreeCreationStep));
             mpComboType->setCurrentIndex((int)mpParentWindow->mpViz->mMOPPInfo.mMethodType);
 
@@ -238,6 +252,7 @@ void ConfigObjDialog::updateConfiguration() {
     mpParentWindow->mpViz->mMOPPInfo.mSubproblemNum = mpLineEditSubProb->text().toInt();
     mpParentWindow->mpViz->mMOPPInfo.mSegmentLength = mpLineEditSegmentLength->text().toDouble();
     mpParentWindow->mpViz->mMOPPInfo.mSparsityK = mpLineEditSparsityK->text().toInt();
+    mpParentWindow->mpViz->mMOPPInfo.mBoundaryIntersectionPenalty = mpLineEditBIPenalty->text().toDouble();
     mpParentWindow->mpViz->mMOPPInfo.mNewTreeCreationStep = mpLineEditNewTreeCreationStep->text().toInt();
 
     int type = mpComboType->currentIndex();
@@ -262,6 +277,10 @@ void ConfigObjDialog::updateConfiguration() {
 }
 
 bool ConfigObjDialog::isCompatible(QString fitnessFile) {
+
+    if(true == fitnessFile.endsWith(".csv", Qt::CaseInsensitive)) {
+        return true;
+    }
     QPixmap pixmap(fitnessFile);
     if (pixmap.width()==mpParentWindow->mpViz->mMOPPInfo.mMapWidth
             && pixmap.height()==mpParentWindow->mpViz->mMOPPInfo.mMapHeight) {

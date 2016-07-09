@@ -33,6 +33,8 @@ MultiObjPathPlanningInfo::MultiObjPathPlanningInfo() {
     mMapWidth = 0;
     mMapHeight = 0;
 
+    mBoundaryIntersectionPenalty = 1.0;
+
     mLoadWeightFile = false;
     mWeightFile = "";
     mInitWeightWSTransform = false;
@@ -191,6 +193,7 @@ void MultiObjPathPlanningInfo::read(const QJsonObject &json) {
     mSubproblemNum = json["subproblemNum"].toInt();
     mMaxIterationNum = json["maxIterationNum"].toInt();
     mSegmentLength = json["segmentLength"].toDouble();
+    mBoundaryIntersectionPenalty = json["boundaryIntersectionPenalty"].toDouble();
 
     mLoadWeightFile = json["loadWeightFile"].toBool();
     mWeightFile = json["weightFile"].toString();
@@ -225,6 +228,7 @@ void MultiObjPathPlanningInfo::write(QJsonObject &json) const {
     json["subproblemNum"] = mSubproblemNum;
     json["maxIterationNum"] = mMaxIterationNum;
     json["segmentLength"] = mSegmentLength;
+    json["boundaryIntersectionPenalty"] = mBoundaryIntersectionPenalty;
 
     json["loadWeightFile"] = mLoadWeightFile;
     json["weightFile"] = mWeightFile;
