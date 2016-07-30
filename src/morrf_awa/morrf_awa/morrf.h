@@ -134,7 +134,7 @@ private:
     unsigned int _objective_num;
     unsigned int _subproblem_num;
 
-    KDTree2D * _p_kd_tree;
+
 
     KDNode2D _root;
 

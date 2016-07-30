@@ -91,6 +91,7 @@ public:
 
     MORRF* mp_parent;
     RRTNode * mp_root;
+    KDTree2D * mp_kd_tree;
 
     std::vector<double> m_weight;
     std::list<RRTNode*> m_nodes;
