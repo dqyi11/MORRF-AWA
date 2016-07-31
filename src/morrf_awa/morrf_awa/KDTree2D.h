@@ -8,7 +8,6 @@
 #include "kdtree++/kdtree.hpp"
 
 class RRTNode;
-class MORRFNode;
 
 class POS2D {
 public:
@@ -54,14 +53,14 @@ public:
 class KDNode2D : public POS2D {
 public:
     KDNode2D( value_type x = -1, value_type y = -1 ) : POS2D( x, y ) {
-        mp_morrf_node = NULL;
+        mp_rrt_node = NULL;
     }
 
     KDNode2D( POS2D & pos ) : POS2D( pos ) {
-        mp_morrf_node = NULL;
+        mp_rrt_node = NULL;
     }
 
-    MORRFNode* mp_morrf_node;
+    RRTNode* mp_rrt_node;
 };
 
 inline std::ostream& operator<< ( std::ostream& out, POS2D const& T ) {

@@ -50,6 +50,7 @@ class RRTree {
 public:
     enum TREE_TYPE{ UNKNOWN, SUBPROBLEM, REFERENCE };
     RRTree( MORRF* parent, unsigned int objective_num, std::vector<float> weight, unsigned int index);
+    virtual ~RRTree();
 
     RRTNode* init( POS2D start, POS2D goal );
     RRTNode* create_new_node( POS2D pos );

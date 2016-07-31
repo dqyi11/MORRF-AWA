@@ -26,8 +26,6 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
     _type = type;
     _enable_init_weight_ws_transform = false;
 
-    _p_kd_tree = new KDTree2D( std::ptr_fun(tac) );
-
     _range = ( _sampling_width > _sampling_height ) ? _sampling_width:_sampling_height;
     _ball_radius = _range;
     _obs_check_resolution = 1;
@@ -52,10 +50,7 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
 
 MORRF::~MORRF() {
     _deinit_weights();
-    if( _p_kd_tree ) {
-        delete _p_kd_tree;
-        _p_kd_tree = NULL;
-    }
+
 }
 
 void MORRF::add_funcs( std::vector<COST_FUNC_PTR> funcs, std::vector<int**> fitnessDistributions) {
@@ -128,32 +123,19 @@ void MORRF::init(POS2D start, POS2D goal, std::vector< std::vector<float> > weig
         weights4create = _weights;
     }
 
-    _root = KDNode2D(start);
-    _root.mp_morrf_node = new MORRFNode( start );
-    _root.mp_morrf_node->m_nodes = std::vector<RRTNode*>(_objective_num+_subproblem_num, NULL);
+    MORRFNode* p_morrf_node = new MORRFNode(start);
 
     for( unsigned int k=0; k<_objective_num; k++ ) {
         create_reference_tree(k);
+
     }
 
     for( unsigned int m=0; m<_subproblem_num; m++ ) {
        create_subproblem_tree(weights4create[m], m+_objective_num);
     }
-    _p_kd_tree->insert( _root );
-    _morrf_nodes.push_back(_root.mp_morrf_node);
-    _current_iteration = 0;
 
-    /*
-    for(unsigned int k=0;k<_objective_num;k++) {
-        if(false==_references[k]->is_added_nodes_size_correct()) {
-            std::cout << "ref tree " << k << " node size incorrect " << _references[k]->m_added_nodes.size() <<  std::endl;
-        }
-    }
-    for(unsigned int m=0;m<_subproblem_num;m++) {
-        if(false==_subproblems[m]->is_added_nodes_size_correct()) {
-            std::cout << "sub tree " << m << " node size incorrect " << _subproblems[m]->m_added_nodes.size() <<  std::endl;
-        }
-    }*/
+    _morrf_nodes.push_back(p_morrf_node);
+    _current_iteration = 0;
 }
 
 ReferenceTree* MORRF::create_reference_tree( unsigned int k ) {

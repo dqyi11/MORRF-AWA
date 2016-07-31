@@ -57,11 +57,20 @@ RRTree::RRTree( MORRF* parent, unsigned int objective_num, std::vector<float>  w
     }
     mp_root = NULL;
 
+    mp_kd_tree = new KDTree2D( std::ptr_fun(tac) );
+
     m_nodes.clear();
     m_current_best_cost = std::vector<double>(m_objective_num, 0.0);
     m_current_best_fitness = std::numeric_limits<float>::max();
     m_first_path_iteration = 0;
     m_sparsity_level = std::numeric_limits<float>::max();
+}
+
+RRTree::~RRTree() {
+    if( mp_kd_tree ) {
+        delete mp_kd_tree;
+        mp_kd_tree = NULL;
+    }
 }
 
 RRTNode* RRTree::init( POS2D start, POS2D goal ) {
@@ -74,6 +83,10 @@ RRTNode* RRTree::init( POS2D start, POS2D goal ) {
     mp_root = create_new_node( start );
     mp_root->m_added = true;
     m_added_nodes.push_back(mp_root);
+
+    KDNode2D root_kd_node(start);
+    root_kd_node.mp_rrt_node = mp_root;
+    mp_kd_tree->insert( root_kd_node );
 
     return mp_root;
 }

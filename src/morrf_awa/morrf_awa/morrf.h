@@ -135,9 +135,6 @@ private:
     unsigned int _subproblem_num;
 
 
-
-    KDNode2D _root;
-
     std::vector<COST_FUNC_PTR> _funcs;
     std::vector<int**> _fitness_distributions;
 
