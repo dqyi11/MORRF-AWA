@@ -123,7 +123,7 @@ void MORRF::init(POS2D start, POS2D goal, std::vector< std::vector<float> > weig
         weights4create = _weights;
     }
 
-    MORRFNode* p_morrf_node = new MORRFNode(start);
+    _root_morrf_node = new MORRFNode(start);
 
     for( unsigned int k=0; k<_objective_num; k++ ) {
         create_reference_tree(k);
@@ -134,7 +134,7 @@ void MORRF::init(POS2D start, POS2D goal, std::vector< std::vector<float> > weig
        create_subproblem_tree(weights4create[m], m+_objective_num);
     }
 
-    _morrf_nodes.push_back(p_morrf_node);
+    _morrf_nodes.push_back(_root_morrf_node);
     _current_iteration = 0;
 }
 
@@ -143,7 +143,7 @@ ReferenceTree* MORRF::create_reference_tree( unsigned int k ) {
     weight[k] = 1.0;
     ReferenceTree * p_ref_tree = new ReferenceTree( this, _objective_num, weight, k );
     RRTNode * p_root_node = p_ref_tree->init( m_start, m_goal );
-    _root.mp_morrf_node->m_nodes[k] = p_root_node;
+    p_root_node->mp_host_node = _root_morrf_node;
     _references.push_back( p_ref_tree );
     return p_ref_tree;
 }
@@ -151,7 +151,7 @@ ReferenceTree* MORRF::create_reference_tree( unsigned int k ) {
 SubproblemTree* MORRF::create_subproblem_tree( std::vector<float>& weight, unsigned int index ) {
     SubproblemTree * p_sub_tree = new SubproblemTree( this, _objective_num, weight, index );
     RRTNode * p_root_node = p_sub_tree->init( m_start, m_goal );
-    _root.mp_morrf_node->m_nodes[index] = p_root_node;
+    p_root_node->mp_host_node = _root_morrf_node;
     _subproblems.push_back( p_sub_tree );
     return p_sub_tree;
 }
@@ -159,7 +159,8 @@ SubproblemTree* MORRF::create_subproblem_tree( std::vector<float>& weight, unsig
 SubproblemTree* MORRF::create_subproblem_tree( std::vector<float>& weight, unsigned int index, std::vector<MORRFNode*>& pos_seq ) {
     SubproblemTree * p_sub_tree = new SubproblemTree( this, _objective_num, weight, index );
     RRTNode * p_root_node = p_sub_tree->init( m_start, m_goal );
-    _root.mp_morrf_node->m_nodes.push_back(p_root_node);
+    p_root_node->mp_host_node = _root_morrf_node;
+
     _subproblems.push_back( p_sub_tree );
 
     for(unsigned int i=0; i<pos_seq.size();i++) {
@@ -346,13 +347,12 @@ void MORRF::extend() {
             std::list<KDNode2D> near_nodes = find_near( new_pos );
             node_inserted = true;
 
-            new_node.mp_morrf_node = new MORRFNode( new_pos );
-            new_node.mp_morrf_node->m_nodes = std::vector<RRTNode*>(_objective_num+_subproblems.size(), NULL);
+            MORRFNode* p_morrf_node = new MORRFNode(new_pos);
 
             // create new nodes of reference trees
             for( unsigned int k=0; k < _objective_num; k++ ) {
                 RRTNode * p_new_ref_node = _references[k]->create_new_node( new_pos );
-                p_new_ref_node->mp_host_node = new_node.mp_morrf_node;
+                p_new_ref_node->mp_host_node = p_morrf_node;
 
                 KDNode2D new_node( new_pos );
                 new_node.mp_rrt_node = p_new_ref_node;
@@ -363,7 +363,7 @@ void MORRF::extend() {
             // create new nodes of subproblem trees
             for ( unsigned int m=0; m < _subproblems.size(); m++ ) {
                 RRTNode * p_new_sub_node = _subproblems[m]->create_new_node( new_pos );
-                p_new_sub_node->mp_host_node = new_node.mp_morrf_node;
+                p_new_sub_node->mp_host_node = p_morrf_node;
 
                 KDNode2D new_node( new_pos );
                 new_node.mp_rrt_node = p_new_sub_node;
@@ -371,8 +371,7 @@ void MORRF::extend() {
                 node_inserted = true;
             }
 
-            _morrf_nodes.push_back( new_node.mp_morrf_node );
-
+            _morrf_nodes.push_back( p_morrf_node );
 
 
             // attach new node to reference trees
@@ -381,13 +380,13 @@ void MORRF::extend() {
 
                 unsigned int index = _references[k]->m_index;
                 //RRTNode* p_nearest_ref_node = nearest_node.mp_morrf_node->m_nodes[index];
-                RRTNode* p_new_ref_node = new_node.mp_morrf_node->m_nodes[index];
+                RRTNode* p_new_ref_node = new_node.mp_rrt_node;
                 list<RRTNode*> near_ref_nodes;
                 near_ref_nodes.clear();
                 for( list<KDNode2D>::iterator itr = near_nodes.begin();
                     itr != near_nodes.end(); itr++) {
                     KDNode2D kd_node = (*itr);
-                    RRTNode* pRefNode = kd_node.mp_morrf_node->m_nodes[index];
+                    RRTNode* pRefNode = kd_node.mp_rrt_node;
                     near_ref_nodes.push_back( pRefNode );
                 }
 
@@ -401,13 +400,13 @@ void MORRF::extend() {
 
                 unsigned int index = _subproblems[m]->m_index;
                 //RRTNode* p_nearest_sub_node = nearest_node.mp_morrf_node->m_nodes[index];
-                RRTNode* p_new_sub_node = new_node.mp_morrf_node->m_nodes[index];
+                RRTNode* p_new_sub_node = new_node.mp_rrt_node;
                 std::list<RRTNode*> near_sub_nodes;
                 near_sub_nodes.clear();
                 for( std::list<KDNode2D>::iterator its = near_nodes.begin();
                     its != near_nodes.end(); its++) {
                     KDNode2D kd_node = (*its);
-                    RRTNode* p_sub_node = kd_node.mp_morrf_node->m_nodes[index];
+                    RRTNode* p_sub_node = kd_node.mp_rrt_node;
                     near_sub_nodes.push_back( p_sub_node );
                 }
 

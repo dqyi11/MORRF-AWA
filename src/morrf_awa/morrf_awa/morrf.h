@@ -157,6 +157,7 @@ private:
 
     std::vector<MORRFNode*> _morrf_nodes;
 
+    MORRFNode* _root_morrf_node;
     double _theta;
     int _current_iteration;
     int _new_tree_creation_step;
