@@ -58,6 +58,11 @@ public:
     bool has_edge( RRTNode* p_node_p, RRTNode* p_node_c );
     bool add_edge( RRTNode* p_node_p, RRTNode* p_node_c );
 
+    KDNode2D find_nearest( POS2D pos );
+    KDNode2D find_exact(POS2D pos);
+    std::list<KDNode2D> find_near( POS2D pos );
+    bool _contains( POS2D pos );
+
     std::list<RRTNode*> find_all_children( RRTNode* pNode );
 
     virtual void attach_new_node( RRTNode* p_node_new, std::list<RRTNode*> near_nodes ) = 0;

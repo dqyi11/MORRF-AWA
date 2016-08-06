@@ -32,13 +32,9 @@ public:
     POS2D steer( POS2D pos_a, POS2D pos_b );
     void extend();
 
-    KDNode2D find_nearest( POS2D pos );
-    KDNode2D find_exact(POS2D pos);
-    std::list<KDNode2D> find_near( POS2D pos );
-
     bool _is_obstacle_free( POS2D pos_a, POS2D pos_b );
     bool _is_in_obstacle( POS2D pos );
-    bool _contains( POS2D pos );
+
 
     bool calc_cost( POS2D& pos_a, POS2D& pos_b, std::vector<double>& cost );
     double calc_kth_cost( POS2D& pos_a, POS2D& pos_b, unsigned int k );
@@ -87,6 +83,7 @@ public:
     bool is_ref_tree_min_cost();
     bool is_morrf_node_child_size_correct();
 
+    void update_ball_radius();
     double get_ball_radius() { return _ball_radius; }
     bool update_path_cost( Path *p );
 
@@ -94,7 +91,7 @@ public:
     void construct( std::vector<MORRFNode*>& pos_seq,  SubproblemTree* p_new_sub_tree );
 
     void optimize();
-    void update_ball_radius();
+
 
     void set_sparsity_k(unsigned int k) { _sparsity_k = k; }
     unsigned int get_sparsity_k() { return _sparsity_k; }

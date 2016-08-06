@@ -491,49 +491,13 @@ void MORRF::update_sparsity_level( std::vector<Path*>& paths ) {
     }
 }
 
-KDNode2D MORRF::find_nearest( POS2D pos ) {
-    KDNode2D node( pos );
-
-    std::pair<KDTree2D::const_iterator,double> found = _p_kd_tree->find_nearest( node );
-    KDNode2D nearest_node = *found.first;
-    return nearest_node;
-}
-
-KDNode2D MORRF::find_exact(POS2D pos) {
-    KDNode2D node( pos );
-
-    KDTree2D::const_iterator it = _p_kd_tree->find_exact( node );
-    KDNode2D this_node = *it;
-    return this_node;
-}
-
-std::list<KDNode2D> MORRF::find_near( POS2D pos ) {
-    std::list<KDNode2D> near_list;
-    KDNode2D node(pos);
-    _p_kd_tree->find_within_range( node, _ball_radius, std::back_inserter(near_list) );
-
-    return near_list;
-}
-
 void MORRF::update_ball_radius() {
-    int num_vertices = _p_kd_tree->size();
+
+    int num_vertices = _morrf_nodes.size();
     int num_dimensions = 2;
     _ball_radius = _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
 }
 
-bool MORRF::_contains( POS2D pos ) {
-    if( _p_kd_tree ) {
-        KDNode2D node( pos[0], pos[1] );
-        KDTree2D::const_iterator it = _p_kd_tree->find( node );
-        if( it != _p_kd_tree->end() ) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    return false;
-}
 
 bool MORRF::calc_cost(POS2D& pos_a, POS2D& pos_b, std::vector<double>& cost) {
     for( unsigned int k = 0; k < _objective_num; k++ ) {
