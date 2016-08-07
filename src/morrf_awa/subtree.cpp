@@ -206,7 +206,7 @@ list<RRTNode*> RRTree::find_all_children( RRTNode* p_node ) {
 KDNode2D RRTree::find_nearest( POS2D pos ) {
     KDNode2D node( pos );
 
-    std::pair<KDTree2D::const_iterator,double> found = _p_kd_tree->find_nearest( node );
+    std::pair<KDTree2D::const_iterator,double> found = mp_kd_tree->find_nearest( node );
     KDNode2D nearest_node = *found.first;
     return nearest_node;
 }
@@ -219,10 +219,10 @@ KDNode2D RRTree::find_exact(POS2D pos) {
     return this_node;
 }
 
-std::list<KDNode2D> RRTree::find_near( POS2D pos ) {
+std::list<KDNode2D> RRTree::find_near( POS2D pos, double ball_radius ) {
     std::list<KDNode2D> near_list;
     KDNode2D node(pos);
-    mp_kd_tree->find_within_range( node, _ball_radius, std::back_inserter(near_list) );
+    mp_kd_tree->find_within_range( node, ball_radius, std::back_inserter(near_list) );
 
     return near_list;
 }

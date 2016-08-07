@@ -60,7 +60,7 @@ public:
 
     KDNode2D find_nearest( POS2D pos );
     KDNode2D find_exact(POS2D pos);
-    std::list<KDNode2D> find_near( POS2D pos );
+    std::list<KDNode2D> find_near( POS2D pos, double ball_radius );
     bool _contains( POS2D pos );
 
     std::list<RRTNode*> find_all_children( RRTNode* pNode );
