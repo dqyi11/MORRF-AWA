@@ -44,6 +44,8 @@ MORRF::MORRF(unsigned int width, unsigned int height, unsigned int objective_num
         }
     }
 
+    _p_kd_tree = new KDMORRFTree2D( std::ptr_fun(tac2) );
+
     _solution_available_iteration = -1;
     _solution_utopia = std::vector<double>(_objective_num, 0.0);
 }
@@ -469,6 +471,23 @@ void MORRF::update_sparsity_level() {
     for( unsigned int m=0; m<subproblem_num; m++ ) {
         _subproblems[m]->m_sparsity_level = res[m+_objective_num];
     }
+}
+
+KDMORRFNode2D MORRF::find_nearest( POS2D pos ) {
+
+}
+
+KDMORRFNode2D MORRF::find_exact(POS2D pos) {
+
+
+}
+
+std::list<KDMORRFNode2D> MORRF::find_near( POS2D pos, double ball_radius ) {
+
+}
+
+bool MORRF::_contains( POS2D pos ) {
+
 }
 
 void MORRF::update_sparsity_level( std::vector<Path*>& paths ) {

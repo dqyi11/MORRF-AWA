@@ -8,6 +8,7 @@
 #include "kdtree++/kdtree.hpp"
 
 class RRTNode;
+class MORRFNode;
 
 class POS2D {
 public:
@@ -63,6 +64,19 @@ public:
     RRTNode* mp_rrt_node;
 };
 
+class KDMORRFNode2D : public POS2D {
+public:
+    KDMORRFNode2D( value_type x = -1, value_type y = -1 ) : POS2D( x, y ) {
+        mp_morrf_node = NULL;
+    }
+
+    KDMORRFNode2D( POS2D & pos ) : POS2D( pos ) {
+        mp_morrf_node = NULL;
+    }
+
+    MORRFNode* mp_morrf_node;
+};
+
 inline std::ostream& operator<< ( std::ostream& out, POS2D const& T ) {
     return out << '(' << T.d[0] << ',' << T.d[1] << ')';
 }
@@ -73,6 +87,10 @@ inline std::ostream& operator<< ( std::ostream& out, KDNode2D const& T ) {
 
 inline double tac( KDNode2D t, size_t k ) { return t[k]; }
 
+inline double tac2( KDMORRFNode2D t, size_t k ) { return t[k]; }
+
 typedef KDTree::KDTree< 2, KDNode2D, std::pointer_to_binary_function< KDNode2D, size_t, double > > KDTree2D;
+
+typedef KDTree::KDTree< 2, KDMORRFNode2D, std::pointer_to_binary_function< KDMORRFNode2D, size_t, double > > KDMORRFTree2D;
 
 #endif // KDTREE2D_H

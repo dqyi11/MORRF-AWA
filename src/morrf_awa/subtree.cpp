@@ -229,10 +229,10 @@ std::list<KDNode2D> RRTree::find_near( POS2D pos, double ball_radius ) {
 
 
 bool RRTree::_contains( POS2D pos ) {
-    if( _p_kd_tree ) {
+    if( mp_kd_tree ) {
         KDNode2D node( pos[0], pos[1] );
-        KDTree2D::const_iterator it = _p_kd_tree->find( node );
-        if( it != _p_kd_tree->end() ) {
+        KDTree2D::const_iterator it = mp_kd_tree->find( node );
+        if( it != mp_kd_tree->end() ) {
             return true;
         }
         else {
@@ -471,7 +471,7 @@ RRTNode * ReferenceTree::get_closet_to_goal( vector<double>& delta_cost, double&
         KDNode2D nearest_node = mp_parent->find_nearest( m_goal );
         p_closest_node = nearest_node.mp_morrf_node->m_nodes[m_index];
         */
-        list<KDNode2D> near_nodes = mp_parent->find_near( m_goal );
+        list<KDNode2D> near_nodes = find_near( m_goal, mp_parent->get_ball_radius() );
         double min_total_fitness = std::numeric_limits<double>::max();
         double min_delta_fitness = 0.0;
         RRTNode * p_min_prev_node = NULL;
@@ -637,7 +637,7 @@ RRTNode * SubproblemTree::get_closet_to_goal( vector<double>& delta_cost, double
         p_closest_node = nearest_node.mp_morrf_node->m_nodes[m_index];
     }
     */
-    list<KDNode2D> near_nodes = mp_parent->find_near( m_goal );
+    list<KDNode2D> near_nodes = find_near( m_goal, mp_parent->get_ball_radius() );
     double min_total_fitness = std::numeric_limits<double>::max();
     double min_delta_fitness = 0.0;
     RRTNode * p_min_prev_node = NULL;

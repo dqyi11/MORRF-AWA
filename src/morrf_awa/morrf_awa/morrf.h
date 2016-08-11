@@ -56,6 +56,11 @@ public:
     SubproblemTree* get_subproblem_tree( unsigned int m );
     unsigned int get_subproblem_tree_num() { return _subproblems.size(); }
 
+    KDMORRFNode2D find_nearest( POS2D pos );
+    KDMORRFNode2D find_exact(POS2D pos);
+    std::list<KDMORRFNode2D> find_near( POS2D pos, double ball_radius = get_ball_radius() );
+    bool _contains( POS2D pos );
+
     std::vector<Path*> get_paths();
 
     bool update_current_best();
@@ -162,6 +167,8 @@ private:
     unsigned int _sparsity_k;
     int _solution_available_iteration;
     std::vector<double> _solution_utopia;
+
+    KDMORRFTree2D * _p_kd_tree;
 };
 
 #endif // MORRF_H
