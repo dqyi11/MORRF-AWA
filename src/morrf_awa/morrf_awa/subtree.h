@@ -58,9 +58,9 @@ public:
     bool has_edge( RRTNode* p_node_p, RRTNode* p_node_c );
     bool add_edge( RRTNode* p_node_p, RRTNode* p_node_c );
 
-    KDNode2D find_nearest( POS2D pos );
-    KDNode2D find_exact(POS2D pos);
-    std::list<KDNode2D> find_near( POS2D pos, double ball_radius );
+    RRTNode* find_nearest( POS2D pos );
+    RRTNode* find_exact(POS2D pos);
+    std::list<RRTNode*> find_near( POS2D pos );
     bool _contains( POS2D pos );
 
     std::list<RRTNode*> find_all_children( RRTNode* pNode );
@@ -76,6 +76,8 @@ public:
     bool are_all_nodes_fitness_positive();
     bool is_added_nodes_size_correct();
 
+    void update_ball_radius();
+    double get_ball_radius() { return _ball_radius; }
 
     RRTNode* find_ancestor( RRTNode* p_node );
     unsigned int get_current_iteration() { return m_nodes.size(); }
@@ -109,6 +111,8 @@ public:
     std::vector< std::vector<double> > m_hist_cost;
     std::vector< double > m_hist_fitness;
     std::vector< double > m_hist_sparsity_level;
+
+    double _ball_radius;
 };
 
 class ReferenceTree : public RRTree {

@@ -1,7 +1,7 @@
 #ifndef KDTREE2D_H
 #define KDTREE2D_H
 
-#define KDTREE_DEFINE_OSTREAM_OPERATORS
+//#define KDTREE_DEFINE_OSTREAM_OPERATORS
 
 #include <functional>
 #include <iostream>

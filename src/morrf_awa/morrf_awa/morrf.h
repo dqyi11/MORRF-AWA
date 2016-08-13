@@ -58,7 +58,7 @@ public:
 
     KDMORRFNode2D find_nearest( POS2D pos );
     KDMORRFNode2D find_exact(POS2D pos);
-    std::list<KDMORRFNode2D> find_near( POS2D pos, double ball_radius = get_ball_radius() );
+    std::list<KDMORRFNode2D> find_near( POS2D pos );
     bool _contains( POS2D pos );
 
     std::vector<Path*> get_paths();
@@ -85,18 +85,13 @@ public:
     bool are_all_reference_nodes_fitness_positive();
     bool are_all_subproblem_nodes_fitness_positive();
     bool is_node_number_identical();
-    bool is_ref_tree_min_cost();
-    bool is_morrf_node_child_size_correct();
 
-    void update_ball_radius();
-    double get_ball_radius() { return _ball_radius; }
     bool update_path_cost( Path *p );
 
     void construct( std::vector<MORRFNode*>& pos_seq,  std::vector<SubproblemTree*>& new_subproblems );
     void construct( std::vector<MORRFNode*>& pos_seq,  SubproblemTree* p_new_sub_tree );
 
     void optimize();
-
 
     void set_sparsity_k(unsigned int k) { _sparsity_k = k; }
     unsigned int get_sparsity_k() { return _sparsity_k; }
@@ -114,6 +109,9 @@ public:
 
     void sort_subproblem_trees();
 
+    void update_ball_radius();
+    double get_ball_radius() { return _ball_radius; }
+    double get_range() { return _range; }
     double get_theta() { return _theta; }
     void set_theta( double theta ) { _theta = theta; }
 protected:
@@ -152,12 +150,12 @@ private:
     POS2D m_goal;
 
     double _range;
-    double _ball_radius;
     double _segment_length;
     int _obs_check_resolution;
     bool _enable_init_weight_ws_transform;
 
     std::vector<MORRFNode*> _morrf_nodes;
+    double _ball_radius;
 
     MORRFNode* _root_morrf_node;
     double _theta;

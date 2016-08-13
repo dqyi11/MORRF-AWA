@@ -51,6 +51,8 @@ RRTree::RRTree( MORRF* parent, unsigned int objective_num, std::vector<float>  w
     m_index = index;
     mp_current_best = NULL;
 
+    _ball_radius = mp_parent->get_range();
+
     m_weight.clear();
     for( unsigned int k=0; k<m_objective_num; k++ ) {
         m_weight.push_back( weight[k] );
@@ -94,7 +96,15 @@ RRTNode* RRTree::init( POS2D start, POS2D goal ) {
 RRTNode*  RRTree::create_new_node( POS2D pos ) {
     RRTNode * pNode = new RRTNode( pos, m_objective_num, m_index );
     m_nodes.push_back(pNode);
+    update_ball_radius();
     return pNode;
+}
+
+void RRTree::update_ball_radius() {
+
+    int num_vertices = m_nodes.size();
+    int num_dimensions = 2;
+    _ball_radius = mp_parent->get_theta() * mp_parent->get_range() * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
 }
 
 bool RRTree::remove_edge( RRTNode* p_node_p, RRTNode*  p_node_c ) {
@@ -203,28 +213,35 @@ list<RRTNode*> RRTree::find_all_children( RRTNode* p_node ) {
     return child_list;
 }
 
-KDNode2D RRTree::find_nearest( POS2D pos ) {
+RRTNode* RRTree::find_nearest( POS2D pos ) {
     KDNode2D node( pos );
 
     std::pair<KDTree2D::const_iterator,double> found = mp_kd_tree->find_nearest( node );
     KDNode2D nearest_node = *found.first;
-    return nearest_node;
+    return nearest_node.mp_rrt_node;
 }
 
-KDNode2D RRTree::find_exact(POS2D pos) {
+RRTNode* RRTree::find_exact(POS2D pos) {
     KDNode2D node( pos );
 
     KDTree2D::const_iterator it = mp_kd_tree->find_exact( node );
     KDNode2D this_node = *it;
-    return this_node;
+    return this_node.mp_rrt_node;
 }
 
-std::list<KDNode2D> RRTree::find_near( POS2D pos, double ball_radius ) {
+std::list<RRTNode*> RRTree::find_near( POS2D pos ) {
     std::list<KDNode2D> near_list;
+    std::list<RRTNode*> near_rrt_list;
     KDNode2D node(pos);
-    mp_kd_tree->find_within_range( node, ball_radius, std::back_inserter(near_list) );
+    double ball_radius = get_ball_radius();
 
-    return near_list;
+    mp_kd_tree->find_within_range( node, ball_radius, std::back_inserter(near_list) );
+    for(std::list<KDNode2D>::iterator it = near_list.begin();
+        it != near_list.end(); it++) {
+        KDNode2D node = (*it);
+        near_rrt_list.push_back(node.mp_rrt_node);
+    }
+    return near_rrt_list;
 }
 
 
@@ -471,15 +488,14 @@ RRTNode * ReferenceTree::get_closet_to_goal( vector<double>& delta_cost, double&
         KDNode2D nearest_node = mp_parent->find_nearest( m_goal );
         p_closest_node = nearest_node.mp_morrf_node->m_nodes[m_index];
         */
-        list<KDNode2D> near_nodes = find_near( m_goal, mp_parent->get_ball_radius() );
+        list<RRTNode*> near_nodes = find_near( m_goal );
         double min_total_fitness = std::numeric_limits<double>::max();
         double min_delta_fitness = 0.0;
         RRTNode * p_min_prev_node = NULL;
-        for( list<KDNode2D>::iterator it=near_nodes.begin();
+        for( list<RRTNode*>::iterator it=near_nodes.begin();
             it!=near_nodes.end(); it++ ) {
 
-            KDNode2D kd_node = (*it);
-            RRTNode* p_node = kd_node.mp_rrt_node;
+            RRTNode* p_node = (*it);
             if( mp_parent->_is_obstacle_free( p_node->m_pos, m_goal ) ) {
 
                 double delta_fitness = mp_parent->calc_kth_cost( p_node->m_pos, m_goal, m_index );
@@ -637,15 +653,14 @@ RRTNode * SubproblemTree::get_closet_to_goal( vector<double>& delta_cost, double
         p_closest_node = nearest_node.mp_morrf_node->m_nodes[m_index];
     }
     */
-    list<KDNode2D> near_nodes = find_near( m_goal, mp_parent->get_ball_radius() );
+    list<RRTNode*> near_nodes = find_near( m_goal );
     double min_total_fitness = std::numeric_limits<double>::max();
     double min_delta_fitness = 0.0;
     RRTNode * p_min_prev_node = NULL;
-    for( list<KDNode2D>::iterator it=near_nodes.begin();
+    for( list<RRTNode*>::iterator it=near_nodes.begin();
         it!=near_nodes.end(); it++ ) {
 
-        KDNode2D kd_node = (*it);
-        RRTNode* p_node = kd_node.mp_rrt_node;
+        RRTNode* p_node = (*it);
         if( mp_parent->_is_obstacle_free( p_node->m_pos, m_goal ) ) {
             std::vector<double> delta_cost(m_objective_num, 0.0);
             std::vector<double> total_cost(m_objective_num, 0.0);
